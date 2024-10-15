@@ -1,6 +1,7 @@
 package com.alwx.backend.utils;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,55 +15,50 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 @Component
 public class JwtTokenUtil {
-
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-
-        List<String> rolesList = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        
+        List<String> rolesList = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
         claims.put("roles", rolesList);
 
         Date issuedDate = new Date();
         Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
-
         return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(userDetails.getUsername())
-            .setIssuedAt(issuedDate)
-            .setExpiration(expiredDate)
-            .signWith(SignatureAlgorithm.HS384, secret)
-            .compact();
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(issuedDate)
+                .setExpiration(expiredDate)
+                .signWith(SignatureAlgorithm.HS256, secret)
+                .compact();
     }
 
-    private Claims getAllClaimsFromToken(String token){
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-    }
-
-    public String getUsername(String token){
+    public String getUsername(String token) {
         return getAllClaimsFromToken(token).getSubject();
     }
 
-    public List<String> getRoles(String token){
+    public List<String> getRoles(String token) {
+        return getAllClaimsFromToken(token).get("roles", List.class);
+    }
 
-        Object rolesClaim = getAllClaimsFromToken(token).get("roles");
-
-        if (rolesClaim instanceof List<?> roles) {
-            return roles.stream()
-                        .map(Object::toString)
-                        .collect(Collectors.toList());
-        }
-    
-        return Collections.emptyList();
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
