@@ -13,7 +13,7 @@ public class Sha384PasswordEncoder implements PasswordEncoder {
 
 
     /**
-     * Кодирует (хеширует) пароль с использованием алгоритма SHA-384.
+     * Кодирует пароль с использованием алгоритма SHA-384.
      *
      * @param rawPassword исходный пароль
      * @return хешированный пароль

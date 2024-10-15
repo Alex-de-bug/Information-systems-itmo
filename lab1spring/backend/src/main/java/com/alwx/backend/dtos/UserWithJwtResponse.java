@@ -1,5 +1,7 @@
 package com.alwx.backend.dtos;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,6 +11,8 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class JwtResponse {
+public class UserWithJwtResponse {
+    private String name;
+    private List<String> roles;
     private String token;
 }

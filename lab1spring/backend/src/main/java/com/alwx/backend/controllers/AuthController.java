@@ -23,7 +23,7 @@ public class AuthController {
      * Создает токен аутентификации на основе данных пользователя
      *
      * @param jwtRequest объект с данными для аутентификации (логин и пароль)
-     * @return ResponseEntity с токеном аутентификации или ошибкой
+     * @return ResponseEntity с токеном аутентификации, логином, ролями пользователя
      */
     @PostMapping("/auth")
     public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest jwtRequest) {

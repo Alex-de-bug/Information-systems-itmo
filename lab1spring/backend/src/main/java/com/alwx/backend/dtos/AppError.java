@@ -1,4 +1,4 @@
-package com.alwx.backend.exceptions;
+package com.alwx.backend.dtos;
 import java.util.Date;
 import lombok.Data;
 

@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.alwx.backend.exceptions.UserError;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -53,9 +55,9 @@ public class JwtRequestFilter extends OncePerRequestFilter{
             try {
                 username = jwtTokenUtil.getUsername(jwt);
             } catch (ExpiredJwtException e) {
-                logger.info("Время жизни токена всё");
+                logger.info(UserError.TOKEN_EXPIRED.getMessage());
             } catch (SignatureException e) {
-                logger.info("Подпись неверная");
+                logger.info(UserError.TOKEN_INVALID.getMessage());
             }
         }
 

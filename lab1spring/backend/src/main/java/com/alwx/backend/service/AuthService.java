@@ -1,5 +1,10 @@
 package com.alwx.backend.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,11 +14,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.dtos.JwtRequest;
-import com.alwx.backend.dtos.JwtResponse;
+import com.alwx.backend.dtos.UserWithJwtResponse;
 import com.alwx.backend.dtos.RegUserDto;
 import com.alwx.backend.dtos.UserDto;
-import com.alwx.backend.exceptions.AppError;
+import com.alwx.backend.exceptions.UserError;
 import com.alwx.backend.models.User;
 import com.alwx.backend.utils.JwtTokenUtil;
 
@@ -40,11 +46,15 @@ public class AuthService {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Неправильный логин или пароль"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), UserError.BAD_CREDENTIALS.getMessage()), HttpStatus.UNAUTHORIZED);
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
         String token = jwtTokenUtils.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(
+            new UserWithJwtResponse(
+                authRequest.getUsername(), 
+                userService.loadRolesByUsername(authRequest.getUsername()).stream().map(Object::toString).collect(Collectors.toList()), 
+                token));
     }
 
     /**
@@ -55,10 +65,10 @@ public class AuthService {
      */
     public ResponseEntity<?> createNewUser(@RequestBody RegUserDto registrationUserDto) {
         if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Пароли не совпадают"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.PASSWORDS_DO_NOT_MATCH.getMessage()), HttpStatus.BAD_REQUEST);
         }
         if (userService.findByUsername(registrationUserDto.getUsername()).isPresent()) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Пользователь с указанным именем уже существует"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.USER_ALREADY_EXISTS.getMessage()), HttpStatus.BAD_REQUEST);
         }
         User user = userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername()));
