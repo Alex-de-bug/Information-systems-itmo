@@ -20,12 +20,27 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+
+/**
+ * Фильтр для обработки JWT-токенов в запросах.
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter{
     private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
     private final JwtTokenUtil jwtTokenUtil;
 
+
+
+    /**
+     * Метод для фильтрации запросов и проверки JWT-токена.
+     *
+     * @param request  входящий HTTP-запрос
+     * @param response HTTP-ответ
+     * @param filterChain цепочка фильтров
+     * @throws ServletException в случае ошибки сервлета
+     * @throws IOException в случае ошибки ввода-вывода
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -38,9 +53,9 @@ public class JwtRequestFilter extends OncePerRequestFilter{
             try {
                 username = jwtTokenUtil.getUsername(jwt);
             } catch (ExpiredJwtException e) {
-                logger.debug("Время жизни токена всё");
+                logger.info("Время жизни токена всё");
             } catch (SignatureException e) {
-                logger.debug("Подпись неверная");
+                logger.info("Подпись неверная");
             }
         }
 

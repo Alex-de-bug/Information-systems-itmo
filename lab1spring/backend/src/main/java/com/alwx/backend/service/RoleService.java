@@ -7,11 +7,21 @@ import com.alwx.backend.repositories.RoleRepository;
 
 import lombok.RequiredArgsConstructor;
 
+
+/**
+ * Сервис для управления ролями пользователей.
+ */
 @Service
 @RequiredArgsConstructor
 public class RoleService {
     private final RoleRepository roleRepository;
 
+
+    /**
+     * Получает роль пользователя с именем "ROLE_USER".
+     *
+     * @return объект Role, представляющий роль пользователя
+     */
     public Role getUserRole() {
         return roleRepository.findByName("ROLE_USER").get();
     }

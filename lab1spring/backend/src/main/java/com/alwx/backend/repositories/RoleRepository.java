@@ -8,7 +8,7 @@ import com.alwx.backend.models.Role;
 
 
 /**
- * Взаимодействие с бд таблицой пользователей при помощи jpa 
+ * Взаимодействие с бд таблицой пользователей при помощи спецификации jpa 
  */
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer> {

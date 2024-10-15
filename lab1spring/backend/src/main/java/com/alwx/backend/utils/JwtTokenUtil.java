@@ -15,20 +15,28 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 
+
+/**
+ * Утилита для работы с JWT-токенами, включая их создание, валидацию и извлечение данных.
+ */
 @Component
 public class JwtTokenUtil {
+
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
 
+    /**
+     * Генерирует JWT-токен для данного пользователя.
+     *
+     * @param userDetails объект UserDetails, содержащий информацию о пользователе
+     * @return сгенерированный JWT-токен
+     */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         List<String> rolesList = userDetails.getAuthorities().stream()
@@ -47,14 +55,33 @@ public class JwtTokenUtil {
                 .compact();
     }
 
+    /**
+     * Извлекает имя пользователя из JWT-токена.
+     *
+     * @param token JWT-токен
+     * @return имя пользователя
+     */
     public String getUsername(String token) {
         return getAllClaimsFromToken(token).getSubject();
     }
 
+
+    /**
+     * Извлекает список ролей из JWT-токена.
+     *
+     * @param token JWT-токен
+     * @return список ролей
+     */
     public List<String> getRoles(String token) {
         return getAllClaimsFromToken(token).get("roles", List.class);
     }
 
+    /**
+     * Извлекает все claims из токена.
+     *
+     * @param token JWT-токен
+     * @return Claims объект, содержащий все данные токена
+     */
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)

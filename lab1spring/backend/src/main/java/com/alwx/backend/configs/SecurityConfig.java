@@ -19,6 +19,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.alwx.backend.service.UserService;
 import com.alwx.backend.utils.JwtRequestFilter;
 
+/**
+ * Конфигурационный класс безопасности, определяющий настройки
+ * аутентификации и авторизации для приложения
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
@@ -27,54 +31,87 @@ public class SecurityConfig {
     private JwtRequestFilter jwtRequestFilter;
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Устанавливает кодировщик паролей
+     *
+     * @param passwordEncoder кодировщик паролей
+     */
     @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Устанавливает сервис пользователя для аутентификации
+     *
+     * @param userService сервис пользователя
+     */
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Устанавливает фильтр запросов JWT для обработки аутентификации
+     *
+     * @param jwtRequestFilter фильтр запросов JWT
+     */
     @Autowired
     public void setJwtRequestFilter(JwtRequestFilter jwtRequestFilter) {
         this.jwtRequestFilter = jwtRequestFilter;
     }
     
+    /**
+     * Определяет цепочку фильтров безопасности
+     *
+     * @param http объект HttpSecurity для настройки
+     * @return настроенная цепочка фильтров безопасности
+     * @throws Exception если возникает ошибка конфигурации
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.disable())
+            .csrf(csrf -> csrf.disable()) 
+            .cors(cors -> cors.disable()) 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/secured").authenticated()
+                .requestMatchers("/secured").authenticated() 
                 .requestMatchers("/info").authenticated()
-                .requestMatchers("/admin").hasRole("ADMIN")
-                .anyRequest().permitAll()
+                .requestMatchers("/admin").hasRole("ADMIN") 
+                .anyRequest().permitAll() 
             )
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) 
             )
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             )
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); 
 
-        return http.build();
+        return http.build(); 
     }
 
+    /**
+     * Создает провайдер аутентификации с использованием DAO
+     *
+     * @return экземпляр DaoAuthenticationProvider
+     */
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
-        daoAuthenticationProvider.setUserDetailsService(userService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder); 
+        daoAuthenticationProvider.setUserDetailsService(userService); 
         return daoAuthenticationProvider;
     }
 
+    /**
+     * Создает менеджер аутентификации.
+     *
+     * @param authenticationConfiguration конфигурация аутентификации
+     * @return экземпляр AuthenticationManager
+     * @throws Exception если возникает ошибка при создании менеджера
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+        return authenticationConfiguration.getAuthenticationManager(); 
     }
-
 }
