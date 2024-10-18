@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { loginUser } from '../redux/actions/userActions';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../components/NavBar';
 
 
 const Login = () => {
@@ -23,7 +24,6 @@ const Login = () => {
         const response = await axios.post('http://localhost:8080/auth', userData);
         console.log('Успешный ответ:', response.data);
         
-
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('roles', JSON.stringify(response.data.roles));
         localStorage.setItem('name', response.data.name);
@@ -38,21 +38,26 @@ const Login = () => {
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit">Login</button>
-    </form>
+    <div>
+      <NavBar /> {/* Здесь отображаем наш NavBar */}
+      <main>
+        <form onSubmit={handleLogin}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit">Login</button>
+        </form>
+      </main>
+    </div>
   );
 };
 
