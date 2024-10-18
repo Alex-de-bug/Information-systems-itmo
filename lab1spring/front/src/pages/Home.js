@@ -26,9 +26,9 @@ const Home = () => {
   const handleSend = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.get('http://localhost:8080/secured', {
+            const response = await axios.get('http://localhost:8080/admin', {
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`, 
+                    Authorization: `Bearer ${localStorage.getItem("token")}`, 
                 },
               });
             console.log('Успешный ответ:', response.data);

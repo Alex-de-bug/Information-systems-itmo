@@ -24,9 +24,9 @@ const Login = () => {
         console.log('Успешный ответ:', response.data);
         
 
-        localStorage.setItem('token', JSON.stringify(response.data.token));
+        localStorage.setItem('token', response.data.token);
         localStorage.setItem('roles', JSON.stringify(response.data.roles));
-        localStorage.setItem('name', JSON.stringify(response.data.name));
+        localStorage.setItem('name', response.data.name);
 
         dispatch(loginUser(response.data.name, response.data.roles, response.data.token));
 
