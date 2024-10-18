@@ -1,9 +1,7 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; 
-import { useDispatch } from 'react-redux';
-import axios from 'axios';
-import { logout } from '../redux/slices/userSlice';
+
 import NewVehicleForm from '../components/NewVehicleForm';
+import TableComponent from '../components/TableComponent';
 
 const Home = () => {
 
@@ -26,6 +24,7 @@ const Home = () => {
       <div>
         <h1>Create a New Vehicle</h1>
         <NewVehicleForm />
+        <TableComponent />
       </div>
     </div>
   );
