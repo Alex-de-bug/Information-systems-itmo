@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import NavBar from '../components/NavBar';
+import { Box, Button, TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setNotification } from '../redux/slices/userSlice';
+import AuthGuard from '../utils/AuthGuard';
+
 
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -19,40 +27,81 @@ const Register = () => {
     try {
       const response = await axios.post('http://localhost:8080/reg', userData);
       console.log('Успешный ответ:', response.data);
+      navigate('/login');
+
+      dispatch(setNotification({
+        color: 'success', 
+        message: 'Вы успешно зарегистрировались!'
+      }));
     } catch (error) {
       console.error('Ошибка при отправке данных:', error);
+      dispatch(setNotification({
+          color: 'error', 
+          message: error.response.data.message
+        }));
     }
   };
 
   return (
-
-    <div>
-      <NavBar />
-      <main>
-        <form onSubmit={handleRegister}>
-          <input
-            type="text"
-            placeholder="Username"
+    <AuthGuard>
+      <Box
+        component="main"
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexGrow: 1,
+          pb: "15%",
+        }}
+      >
+        <Box
+          component="form"
+          onSubmit={handleRegister}
+          sx={{
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            padding: 4,
+            borderRadius: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            width: '300px',
+          }}
+        >
+          <TextField
+            label="Username"
+            variant="outlined"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            sx={{ marginBottom: 2 }}
+            fullWidth
           />
-          <input
+          <TextField
+            label="Password"
+            variant="outlined"
             type="password"
-            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            sx={{ marginBottom: 2 }}
+            fullWidth
           />
-          <input
+          <TextField
+            label="Confirm Password"
+            variant="outlined"
             type="password"
-            placeholder="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            sx={{ marginBottom: 2 }}
+            fullWidth
           />
-          <button type="submit">Register</button>
-        </form>
-      </main>
-    </div>
-    
+          <Button variant="contained" color="primary" type="submit" sx={{ marginBottom: 4 }} fullWidth>
+            Register
+          </Button>
+
+          <Button variant="outlined" color="info" onClick={() => navigate('/login')}>
+            Already registered?
+          </Button>
+        </Box>
+      </Box>
+    </AuthGuard>
   );
 };
 

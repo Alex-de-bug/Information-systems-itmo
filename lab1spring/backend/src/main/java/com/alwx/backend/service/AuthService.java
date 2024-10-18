@@ -70,6 +70,12 @@ public class AuthService {
         if (userService.findByUsername(registrationUserDto.getUsername()).isPresent()) {
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.USER_ALREADY_EXISTS.getMessage()), HttpStatus.BAD_REQUEST);
         }
+        if (registrationUserDto.getUsername().length() < 3 || registrationUserDto.getUsername().length() > 20) {
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.LOGIN_INVALID.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+        if (registrationUserDto.getPassword().length() < 3 || registrationUserDto.getPassword().length() > 20) {
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.PASS_INVALID.getMessage()), HttpStatus.BAD_REQUEST);
+        }
         User user = userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername()));
     }

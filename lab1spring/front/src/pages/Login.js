@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { loginUser } from '../redux/actions/userActions';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import NavBar from '../components/NavBar';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import { loginSuccess, setNotification } from '../redux/slices/userSlice';
+import AuthGuard from '../utils/AuthGuard';
+
+
 
 
 const Login = () => {
@@ -11,6 +16,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -28,36 +35,79 @@ const Login = () => {
         localStorage.setItem('roles', JSON.stringify(response.data.roles));
         localStorage.setItem('name', response.data.name);
 
-        dispatch(loginUser(response.data.name, response.data.roles, response.data.token));
-
+        dispatch(loginSuccess({
+          user: response.data.name, 
+          roles: response.data.roles, 
+          token: response.data.token
+        }));
+        
         navigate('/home');
+
+        dispatch(setNotification({
+          color: 'success', 
+          message: 'Вы успешно вошли!'
+        }));
+
     } catch (error) {
         console.error('Ошибка при отправке данных:', error);
+        dispatch(setNotification({
+          color: 'error', 
+          message: error.response.data.message
+        }));
     }
     
   };
 
   return (
-    <div>
-      <NavBar /> {/* Здесь отображаем наш NavBar */}
-      <main>
-        <form onSubmit={handleLogin}>
-          <input
-            type="text"
-            placeholder="Username"
+    <AuthGuard>
+      <Box
+        component="main"
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexGrow: 1,
+          pb: "15%",
+        }}
+      >
+        <Box
+          component="form"
+          onSubmit={handleLogin}
+          sx={{
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            padding: 4,
+            borderRadius: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            width: '300px',
+          }}
+        >
+          <TextField
+            label="Username"
+            variant="outlined"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            sx={{ marginBottom: 2 }}
+            fullWidth
           />
-          <input
+          <TextField
+            label="Password"
+            variant="outlined"
             type="password"
-            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            sx={{ marginBottom: 2 }}
+            fullWidth
           />
-          <button type="submit">Login</button>
-        </form>
-      </main>
-    </div>
+          <Button variant="contained" color="primary" type="submit" sx={{ marginBottom: 4 }} fullWidth>
+            Login
+          </Button>
+          <Button variant="outlined" color="info" onClick={() => navigate('/register')}>
+            Not registered?
+          </Button>
+        </Box>
+      </Box>
+    </AuthGuard>
   );
 };
 

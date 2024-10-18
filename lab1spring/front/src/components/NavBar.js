@@ -4,22 +4,18 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom'; 
-import { useDispatch } from 'react-redux';
-import { logoutUser } from '../redux/actions/userActions';
+import { useDispatch, useSelector } from 'react-redux'; 
 
+import { logout } from '../redux/slices/userSlice';
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-});
 
 const NavBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate(); 
   const dispatch = useDispatch();
+  var userName = useSelector((state) => state.user.user);
+  const admin = (JSON.parse(localStorage.getItem('roles')) || []).includes('ROLE_ADMIN');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -28,35 +24,41 @@ const NavBar = () => {
     } else {
       setIsLoggedIn(false);
     }
-  }, []);
+  }, [userName]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('roles');
     localStorage.removeItem('name'); 
     setIsLoggedIn(false); 
-    dispatch(logoutUser()); 
-    //navigate('/login');
+    dispatch(logout()); 
+    navigate('/login');
+  };
+
+  const handleAdminPage = () => {
+    navigate('/admin'); 
   };
 
   return (
-    <ThemeProvider theme={darkTheme}>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar>
             {!isLoggedIn ? (
               <>
-                <Button onClick={() => navigate('/login')} color="inherit" sx={{ marginRight: 'auto' }}>Вход</Button>
                 <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
-                  Добро пожаловать на сайт!
+                  Дениченко, ISU: 367193
                 </Typography>
-                <Button onClick={() => navigate('/register')} color="inherit" sx={{ marginLeft: 'auto' }}>Регистрация</Button>
               </>
             ) : (
               <>
                 <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
-                  Вы залогинены!
+                LOGIN: {localStorage.getItem("name")}   ROLE: {localStorage.getItem("roles") && localStorage.getItem("roles").includes('ROLE_ADMIN') ? 'ADMIN' : 'USER'}
                 </Typography>
+                { admin && (
+                  <Button color="inherit" onClick={handleAdminPage}>
+                    Управление
+                  </Button>
+                )}
                 <Button color="inherit" sx={{ marginLeft: 'auto' }} onClick={handleLogout}>
                   Выйти
                 </Button>
@@ -65,7 +67,6 @@ const NavBar = () => {
           </Toolbar>
         </AppBar>
       </Box>
-    </ThemeProvider>
   );
 };
 

@@ -80,7 +80,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/secured").authenticated() 
+                .requestMatchers("/vehicles").authenticated() 
                 .requestMatchers("/info").authenticated()
                 .requestMatchers("/admin").hasRole("ADMIN") 
                 .anyRequest().permitAll() 
@@ -94,7 +94,7 @@ public class SecurityConfig {
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); 
 
         http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(request -> configuration));
-        
+
         return http.build(); 
     }
 

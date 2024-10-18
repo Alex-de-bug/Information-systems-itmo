@@ -17,7 +17,7 @@ import com.alwx.backend.service.AuthService;
  */
 @RestController
 public class AuthController {
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    // private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     
     @Autowired
@@ -42,7 +42,6 @@ public class AuthController {
      */
     @PostMapping("/reg")
     public ResponseEntity<?> createNewUser(@RequestBody RegUserDto regUserDto) {
-        logger.info("запрос получен");
         return authService.createNewUser(regUserDto);
     }
 }

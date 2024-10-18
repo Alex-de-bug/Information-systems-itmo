@@ -10,7 +10,9 @@ public enum UserError {
     USER_ALREADY_EXISTS("Пользователь с таким именем уже существует"),
     BAD_CREDENTIALS("Неправильный логин или пароль"),
     TOKEN_EXPIRED("Время жизни токена истекло"),
-    TOKEN_INVALID("Неверная подпись токена");
+    TOKEN_INVALID("Неверная подпись токена"),
+    LOGIN_INVALID("Логин должен быть более 2х символов и менее 21"),
+    PASS_INVALID("Пароль должен быть более 2х символов и менее 21");
 
     private final String message;
 
