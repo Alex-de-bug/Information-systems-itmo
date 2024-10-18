@@ -1,4 +1,4 @@
-package com.alwx.backend.exceptions;
+package com.alwx.backend.utils;
 
 
 /**

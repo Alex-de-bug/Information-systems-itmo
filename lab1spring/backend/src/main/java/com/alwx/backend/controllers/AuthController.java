@@ -1,5 +1,7 @@
 package com.alwx.backend.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,8 @@ import com.alwx.backend.service.AuthService;
  */
 @RestController
 public class AuthController {
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
     
     @Autowired
     private AuthService authService;
@@ -38,6 +42,7 @@ public class AuthController {
      */
     @PostMapping("/reg")
     public ResponseEntity<?> createNewUser(@RequestBody RegUserDto regUserDto) {
+        logger.info("запрос получен");
         return authService.createNewUser(regUserDto);
     }
 }

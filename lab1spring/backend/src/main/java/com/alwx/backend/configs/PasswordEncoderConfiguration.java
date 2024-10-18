@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.alwx.backend.utils.Sha384PasswordEncoder;
+import com.alwx.backend.utils.jwt.Sha384PasswordEncoder;
 
 /**
  * Конфигурационный класс для настройки кодировщика паролей.

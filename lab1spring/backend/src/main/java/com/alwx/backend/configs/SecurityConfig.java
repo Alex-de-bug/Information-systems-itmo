@@ -17,7 +17,8 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.alwx.backend.service.UserService;
-import com.alwx.backend.utils.JwtRequestFilter;
+import com.alwx.backend.utils.jwt.JwtRequestFilter;
+
 
 /**
  * Конфигурационный класс безопасности, определяющий настройки
@@ -72,7 +73,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) 
-            .cors(cors -> cors.disable()) 
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/secured").authenticated() 
                 .requestMatchers("/info").authenticated()

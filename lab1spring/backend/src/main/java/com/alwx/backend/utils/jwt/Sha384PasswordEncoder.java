@@ -1,4 +1,4 @@
-package com.alwx.backend.utils;
+package com.alwx.backend.utils.jwt;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

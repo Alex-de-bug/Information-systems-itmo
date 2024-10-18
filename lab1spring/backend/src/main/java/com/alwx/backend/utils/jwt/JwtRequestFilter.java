@@ -1,4 +1,4 @@
-package com.alwx.backend.utils;
+package com.alwx.backend.utils.jwt;
 
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.alwx.backend.exceptions.UserError;
+import com.alwx.backend.utils.UserError;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -49,7 +49,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
         String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
-
+                
         if(authHeader != null && authHeader.startsWith("Bearer ")){
             jwt = authHeader.substring(7);
             try {
@@ -65,6 +65,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, null, jwtTokenUtil.getRoles(jwt).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
             SecurityContextHolder.getContext().setAuthentication(token);
         }
+        
         filterChain.doFilter(request, response);
     }
 }

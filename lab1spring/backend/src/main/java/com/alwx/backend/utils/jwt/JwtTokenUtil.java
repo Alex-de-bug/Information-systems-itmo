@@ -1,4 +1,4 @@
-package com.alwx.backend.utils;
+package com.alwx.backend.utils.jwt;
 
 import java.time.Duration;
 import java.time.Instant;

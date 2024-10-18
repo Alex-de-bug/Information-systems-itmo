@@ -19,9 +19,9 @@ import com.alwx.backend.dtos.JwtRequest;
 import com.alwx.backend.dtos.UserWithJwtResponse;
 import com.alwx.backend.dtos.RegUserDto;
 import com.alwx.backend.dtos.UserDto;
-import com.alwx.backend.exceptions.UserError;
 import com.alwx.backend.models.User;
-import com.alwx.backend.utils.JwtTokenUtil;
+import com.alwx.backend.utils.UserError;
+import com.alwx.backend.utils.jwt.JwtTokenUtil;
 
 import lombok.RequiredArgsConstructor;
 
