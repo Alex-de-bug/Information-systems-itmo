@@ -1,5 +1,6 @@
 package com.alwx.backend.configs;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -10,15 +11,22 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Autowired
+    private WebSocketHandshakeInterceptor handshakeInterceptor;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic"); // Канал для подписки клиента
-        config.setApplicationDestinationPrefixes("/app"); // Префикс для отправки сообщений на сервер
+        config.enableSimpleBroker("/topic"); 
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:3000").withSockJS();
+        registry.addEndpoint("/ws")
+                .addInterceptors(handshakeInterceptor)
+                .setAllowedOrigins("http://localhost:3000")
+                .withSockJS();
     }
+
 }
 

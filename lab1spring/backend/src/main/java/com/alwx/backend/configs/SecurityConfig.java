@@ -85,7 +85,7 @@ public class SecurityConfig implements WebSocketMessageBrokerConfigurer{
         http
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/ws").authenticated()
+                .requestMatchers("/ws/**").permitAll() 
                 .requestMatchers("/vehicles").authenticated() 
                 .requestMatchers("/info").authenticated()
                 .requestMatchers("/admin").hasRole("ADMIN") 
@@ -132,7 +132,7 @@ public class SecurityConfig implements WebSocketMessageBrokerConfigurer{
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS(); // Подключение к WebSocket
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*");
     }
 
     @Override

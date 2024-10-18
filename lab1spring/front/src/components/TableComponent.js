@@ -1,35 +1,47 @@
 import React, { useEffect } from 'react';
 import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
 
 const TableComponent = () => {
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token not found.');
+            return;
+        }
 
-        const token = localStorage.getItem('token'); // Получаем токен из localStorage или другого источника
 
+        const ws = new WebSocket('ws://localhost:8080/ws');
         const client = new Client({
-            webSocketFactory: () => socket,
+            webSocketFactory: () => ws,
             connectHeaders: {
-                Authorization: `Bearer ${token}`, // Устанавливаем токен в заголовках
+                Authorization: `Bearer ${token.replaceAll('"', '')}`,
             },
             onConnect: (frame) => {
                 console.log('Connected: ' + frame);
                 client.subscribe('/topic/tableUpdates', (message) => {
                     console.log('Received message:', message.body);
-                    // Обработка сообщения и обновление таблицы
                 });
             },
-            onStompError: (frame) => {
-                console.error('Error: ' + frame.headers.message);
+            onWebSocketClose: () => {
+                console.log('WebSocket connection closed.');
             },
+            onStompError: (frame) => {
+                console.error('Broker reported error: ' + frame.headers['message']);
+                console.error('Additional details: ' + frame.body);
+            },
+
+            debug: function (str) {
+                console.log(str);
+              }
+
         });
 
-        client.activate(); // Активируем клиента WebSocket
+        client.activate();
 
         return () => {
-            client.deactivate(); // Деактивируем клиента при размонтировании компонента
+            client.deactivate();
         };
+
     }, []);
 
     return (
