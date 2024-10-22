@@ -2,6 +2,7 @@ package com.alwx.backend.controllers;
 
 import java.util.*;
 
+import org.hibernate.sql.model.ast.TableUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -16,6 +17,7 @@ import com.alwx.backend.dtos.NewVehicle;
 import com.alwx.backend.dtos.SimpleInfoAboutCars;
 import com.alwx.backend.models.Vehicle;
 import com.alwx.backend.service.VehicleService;
+import com.alwx.backend.service.ws.TableUpdateService;
 
 
 
@@ -27,7 +29,7 @@ public class UserController {
     private VehicleService vehicleService;
 
     @Autowired
-    private SimpMessagingTemplate messagingTemplate; 
+    private TableUpdateService tableUpdateService;
 
     @GetMapping("/vehicles")
     public List<SimpleInfoAboutCars> getTableWithVehicle(){
@@ -46,7 +48,7 @@ public class UserController {
     public ResponseEntity<?> createVehicle(@RequestBody NewVehicle newVehicle){
 
         ResponseEntity<?> response = vehicleService.createVehicle(newVehicle);
-        messagingTemplate.convertAndSend("/topic/tableUpdates", "Машины обновлены");
+        tableUpdateService.notifyTableUpdate();
         
         return response;
     }

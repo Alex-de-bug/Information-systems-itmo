@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.utils.UserError;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -23,7 +22,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 
 /**
  * Фильтр для обработки JWT-токенов в запросах.
