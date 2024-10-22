@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alwx.backend.dtos.NewVehicle;
 import com.alwx.backend.dtos.SimpleInfoAboutCars;
 import com.alwx.backend.models.Vehicle;
+import com.alwx.backend.service.TableUpdateService;
 import com.alwx.backend.service.VehicleService;
-import com.alwx.backend.service.ws.TableUpdateService;
 
 
 
@@ -44,7 +44,6 @@ public class UserController {
     }
 
     @PostMapping("/vehicles")
-    @SendTo("/topic/tableUpdates")
     public ResponseEntity<?> createVehicle(@RequestBody NewVehicle newVehicle){
 
         ResponseEntity<?> response = vehicleService.createVehicle(newVehicle);
