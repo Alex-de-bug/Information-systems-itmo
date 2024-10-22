@@ -6,12 +6,14 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.utils.UserError;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -21,7 +23,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.http.ResponseEntity;
 
 /**
  * Фильтр для обработки JWT-токенов в запросах.
@@ -49,15 +51,29 @@ public class JwtRequestFilter extends OncePerRequestFilter{
         String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
+
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/plain; charset=UTF-8");
                 
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
             try {
                 username = jwtTokenUtil.getUsername(jwt);
             } catch (ExpiredJwtException e) {
                 logger.info(UserError.TOKEN_EXPIRED.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write(UserError.TOKEN_EXPIRED.getMessage().toString());
+                return; 
             } catch (SignatureException e) {
                 logger.info(UserError.TOKEN_INVALID.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write(UserError.TOKEN_INVALID.getMessage().toString());
+                return;
+            } catch (IllegalArgumentException e) {
+                logger.info(UserError.TOKEN_INVALID.getMessage());
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.getWriter().write(UserError.TOKEN_INVALID.getMessage());
+                // return;
             }
         }
 

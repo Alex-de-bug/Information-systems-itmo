@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 
@@ -81,9 +82,18 @@ public class JwtTokenUtil {
      * @return Claims объект, содержащий все данные токена
      */
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
+        try {
+            Claims claims = Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
+            return claims;
+        } catch (MalformedJwtException e) {
+            System.err.println("Malformed JWT token: " + e.getMessage());
+            throw new IllegalArgumentException("Invalid JWT token.");
+        } catch (Exception e) {
+            System.err.println("Error parsing JWT token: " + e.getMessage());
+            throw new IllegalArgumentException("Error processing JWT token.");
+        }
     }
 }
