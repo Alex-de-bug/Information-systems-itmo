@@ -51,29 +51,23 @@ public class JwtRequestFilter extends OncePerRequestFilter{
         String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
-
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("text/plain; charset=UTF-8");
                 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
             try {
                 username = jwtTokenUtil.getUsername(jwt);
-            } catch (ExpiredJwtException e) {
+            } catch (ExpiredJwtException | SignatureException e){
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("text/plain; charset=UTF-8");
                 logger.info(UserError.TOKEN_EXPIRED.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write(UserError.TOKEN_EXPIRED.getMessage().toString());
-                return; 
-            } catch (SignatureException e) {
-                logger.info(UserError.TOKEN_INVALID.getMessage());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write(UserError.TOKEN_INVALID.getMessage().toString());
-                return;
             } catch (IllegalArgumentException e) {
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("text/plain; charset=UTF-8");
                 logger.info(UserError.TOKEN_INVALID.getMessage());
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
                 response.getWriter().write(UserError.TOKEN_INVALID.getMessage());
-                // return;
             }
         }
 
