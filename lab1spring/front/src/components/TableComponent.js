@@ -1,28 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
-
 
 const TableComponent = () => {
 
     const [vehicles, setVehicles] = useState([]);
-
+    const stompClientRef = useRef(null); // Use useRef to store stompClient
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('Token not found.');
-            return;
-        }
 
         const fetchVehicles = async () => {
             try {
                 const response = await axios.get('http://localhost:8080/vehicles', {
                     headers: {
-                        Authorization: `Bearer ${token.replaceAll('"', '')}`,
+                        Authorization: `Bearer ${token}`,
                     }
                 });
-                setVehicles(response.data); // Assuming response.data is the list of vehicles
+                setVehicles(response.data); 
             } catch (error) {
                 console.error('Error fetching vehicles:', error);
             }
@@ -30,37 +26,36 @@ const TableComponent = () => {
 
         fetchVehicles();
 
-        const ws = new WebSocket('ws://localhost:8080/ws');
-        const client = new Client({
-            webSocketFactory: () => ws,
-            connectHeaders: {
-                Authorization: `Bearer ${token.replaceAll('"', '')}`,
-            },
-            onConnect: (frame) => {
-                console.log('Connected: ' + frame);
-                client.subscribe('/topic/tableUpdates', (message) => {
-                    console.log('Received message:', message.body);
-                    fetchVehicles();
-                });
-            },
-            onWebSocketClose: () => {
-                console.log('WebSocket connection closed.');
-            },
-            onStompError: (frame) => {
-                console.error('Broker reported error: ' + frame.headers['message']);
-                console.error('Additional details: ' + frame.body);
-            },
+        const connectWebSocket = () => {
+            const socket = new SockJS('http://localhost:8080/ws');
+            const stompClient = new Client({
+                webSocketFactory: () => socket,
+                connectHeaders: {
+                    Authorization: `Bearer ${token}`,
+                },
+                onConnect: (frame) => {
+                    console.log('Connected: ' + frame);
+                    stompClient.subscribe('/topic/tableUpdates', (message) => {
+                        const data = JSON.parse(message.body);
+                        console.log(data);
 
-            debug: function (str) {
-                console.log(str);
-              }
+                        // Update the vehicles table when a new message is received
+                        fetchVehicles();
+                    });
+                },
+                debug: (str) => {
+                    console.log(str);
+                }
+            });
 
-        });
+            stompClient.activate();
+            stompClientRef.current = stompClient; // Store the client in the ref
+        };
 
-        client.activate();
+        connectWebSocket();
 
         return () => {
-            client.deactivate();
+            if (stompClientRef.current) stompClientRef.current.deactivate();
         };
 
     }, []);
@@ -86,7 +81,7 @@ const TableComponent = () => {
                         <th>Permission to Edit</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tbody">
                     {vehicles.map((vehicle) => (
                         <tr key={vehicle.id}>
                             <td>{vehicle.id}</td>
