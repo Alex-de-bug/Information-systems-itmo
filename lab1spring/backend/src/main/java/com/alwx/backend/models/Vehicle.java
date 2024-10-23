@@ -7,6 +7,7 @@ import com.alwx.backend.models.enums.FuelType;
 import com.alwx.backend.models.enums.VehicleType;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -32,6 +33,7 @@ public class Vehicle {
 
     @NotNull
     @NotEmpty
+    @Column(length = 255)
     private String name;
 
     @NotNull
@@ -44,6 +46,7 @@ public class Vehicle {
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(length = 255)
     private VehicleType type;
 
     @NotNull
@@ -66,6 +69,7 @@ public class Vehicle {
     private Float fuelConsumption;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 255)
     private FuelType fuelType;
 
     @ManyToMany(fetch = FetchType.EAGER)

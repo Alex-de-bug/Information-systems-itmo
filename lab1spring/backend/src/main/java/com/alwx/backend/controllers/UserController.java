@@ -1,10 +1,14 @@
 package com.alwx.backend.controllers;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alwx.backend.dtos.AdminRightsRequest;
+import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.dtos.NewVehicle;
 import com.alwx.backend.dtos.SimpleInfoAboutCars;
 import com.alwx.backend.models.Vehicle;
@@ -21,6 +26,7 @@ import com.alwx.backend.service.AuthService;
 import com.alwx.backend.service.UserService;
 import com.alwx.backend.service.VehicleService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
@@ -55,10 +61,19 @@ public class UserController {
     }
 
     @PostMapping("/vehicles")
-    public ResponseEntity<?> createVehicle(@RequestBody NewVehicle newVehicle){
+    public ResponseEntity<?> createVehicle(@Valid @RequestBody NewVehicle newVehicle, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+            return ResponseEntity
+                .badRequest()
+                .body(new AppError(HttpStatus.BAD_REQUEST.value(), errors.toString()));
+        }
 
         ResponseEntity<?> response = vehicleService.createVehicle(newVehicle);
-
+        
         messagingTemplate.convertAndSend("/topic/tableUpdates", 
             "{\"message\": \"Данные в таблице обновлены\"}");
         

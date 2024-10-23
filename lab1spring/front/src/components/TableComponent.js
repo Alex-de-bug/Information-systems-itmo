@@ -82,7 +82,7 @@ const TableComponent = () => {
                     </tr>
                 </thead>
                 <tbody id="tbody">
-                    {vehicles.map((vehicle) => (
+                {[...vehicles].reverse().map((vehicle) => (
                         <tr key={vehicle.id}>
                             <td>{vehicle.id}</td>
                             <td>{vehicle.name}</td>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
+import { setNotification } from '../redux/slices/userSlice';
+
 
 const NewVehicleForm = () => {
     const dispatch = useDispatch();
@@ -21,10 +23,10 @@ const NewVehicleForm = () => {
 
     const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-        ...formData,
-        [name]: value
-    });
+      setFormData({
+          ...formData,
+          [name]: value
+      });
     };
 
     const handleListChange = (e) => {
@@ -52,6 +54,10 @@ const NewVehicleForm = () => {
         });
       console.log('Response:', response.data);
     } catch (error) {
+      dispatch(setNotification({
+        color: 'error',
+        message: error.response.data.message ? error.response.data.message : 'Ошибка при отправке данных'
+      }));
       console.error('Error sending data', error);
     }
   };
@@ -60,47 +66,47 @@ const NewVehicleForm = () => {
     <form onSubmit={handleSubmit}>
       <div>
         <label>Name:</label>
-        <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+        <input type="text" name="name" value={formData.name} onChange={handleChange} />
       </div>
       <div>
-        <label>X Coordinate (Long):</label>
-        <input type="number" name="x" value={formData.x} onChange={handleChange} required />
+        <label>X Coordinate:</label>
+        <input type="number" name="x" value={formData.x} onChange={handleChange} />
       </div>
       <div>
-        <label>Y Coordinate (Double):</label>
-        <input type="number" step="any" name="y" value={formData.y} onChange={handleChange} required />
+        <label>Y Coordinate:</label>
+        <input type="number" step="any" name="y" value={formData.y} onChange={handleChange} />
       </div>
       <div>
         <label>Type:</label>
-        <select name="type" value={formData.type} onChange={handleChange} required>
+        <select name="type" value={formData.type} onChange={handleChange}>
           <option value="PLANE">PLANE</option>
           <option value="BOAT">BOAT</option>
           <option value="BICYCLE">BICYCLE</option>
         </select>
       </div>
       <div>
-        <label>Engine Power (Double):</label>
-        <input type="number" step="any" name="enginePower" value={formData.enginePower} onChange={handleChange} required />
+        <label>Engine Power:</label>
+        <input type="number" step="any" name="enginePower" value={formData.enginePower} onChange={handleChange}  />
       </div>
       <div>
-        <label>Number of Wheels (Long):</label>
-        <input type="number" name="numberOfWheels" value={formData.numberOfWheels} onChange={handleChange} required />
+        <label>Number of Wheels:</label>
+        <input type="number" name="numberOfWheels" value={formData.numberOfWheels} onChange={handleChange}  />
       </div>
       <div>
-        <label>Capacity (Long):</label>
-        <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} required />
+        <label>Capacity:</label>
+        <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} />
       </div>
       <div>
-        <label>Distance Travelled (Double):</label>
-        <input type="number" step="any" name="distanceTravelled" value={formData.distanceTravelled} onChange={handleChange} required />
+        <label>Distance Travelled:</label>
+        <input type="number" step="any" name="distanceTravelled" value={formData.distanceTravelled} onChange={handleChange}/>
       </div>
       <div>
-        <label>Fuel Consumption (Float):</label>
-        <input type="number" step="any" name="fuelConsumption" value={formData.fuelConsumption} onChange={handleChange} required />
+        <label>Fuel Consumption:</label>
+        <input type="number" step="any" name="fuelConsumption" value={formData.fuelConsumption} onChange={handleChange}/>
       </div>
       <div>
         <label>Fuel Type:</label>
-        <select name="fuelType" value={formData.fuelType} onChange={handleChange} required>
+        <select name="fuelType" value={formData.fuelType} onChange={handleChange}>
           <option value="KEROSENE">KEROSENE</option>
           <option value="ELECTRICITY">ELECTRICITY</option>
           <option value="DIESEL">DIESEL</option>
@@ -110,7 +116,7 @@ const NewVehicleForm = () => {
       </div>
       <div>
         <label>Names of Owners (comma-separated):</label>
-        <input type="text" name="namesOfOwners" value={formData.namesOfOwners.join(',')} onChange={handleListChange} />
+        <input type="text" name="namesOfOwners" value={formData.namesOfOwners.join(', ')} onChange={handleListChange} />
       </div>
       <div>
         <label>Permission to Edit:</label>
