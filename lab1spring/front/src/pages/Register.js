@@ -35,9 +35,9 @@ const Register = () => {
       }));
     } catch (error) {
       console.error('Ошибка при отправке данных:', error);
-      dispatch(setNotification({
+        dispatch(setNotification({
           color: 'error', 
-          message: error.response.data.message
+          message: error.response ? error.response.data.message : 'Сервер недоступен. Попробуйте позже.'
         }));
     }
   };

@@ -1,11 +1,15 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Button, Table, TableBody, TableCell, TableHead, TableRow, Paper } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSuccess, setNotification } from '../redux/slices/userSlice';
 
 const AdminPanel = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
 
   useEffect(() => {
@@ -19,39 +23,58 @@ const AdminPanel = () => {
         });
         setRequests(response.data);
       } catch (err) {
-        setError('Ошибка при загрузке заявок');
+        if(err.response.status === 403) {
+            try {
+              const response = await axios.get('http://localhost:8080/user/token', {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, 
+                    },
+                  });
+                  localStorage.setItem('token', response.data.token);
+                  localStorage.setItem('roles', JSON.stringify(response.data.roles));
+                  localStorage.setItem('name', response.data.name);
+          
+                  dispatch(loginSuccess({
+                    user: response.data.name, 
+                    roles: response.data.roles, 
+                    token: response.data.token
+                  }));
+                  
+                  navigate('/home');
+            } catch (error) {
+                console.error('Ошибка при отправке данных:', error);
+            } finally{
+              dispatch(setNotification({
+                color: 'info', 
+                message: 'У вас больше нет прав админа'
+              }));
+            } 
+        }
+        dispatch(setNotification({
+          color: 'error', 
+          message: err.response.data.message
+        }));
       } finally {
         setLoading(false);
       }
     };
     fetchRequests();
-  }, []);
+  }, [dispatch, navigate]);
 
-  const handleApprove = async (username) => {
+  const handleRequest = async (username, rulling) => {
     try {
-        const response = await axios.post('http://localhost:8080/admin/requests', {username: username, rulling: true}, {
+        const response = await axios.post('http://localhost:8080/admin/requests', {username: username, rulling: rulling}, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
             }
         });
         setRequests(response.data);
       } catch (err) {
-        setError('Ошибка при загрузке заявок');
-      } finally {
-        setLoading(false);
-      }
-  };
-
-  const handleReject = async (username) => {
-    try {
-        const response = await axios.post('http://localhost:8080/admin/requests', {username: username, rulling: false}, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            }
-        });
-        setRequests(response.data);
-      } catch (err) {
-        setError('Ошибка при загрузке заявок');
+        dispatch(setNotification({
+          color: 'error', 
+          message: err.response.data.message
+        }));
+        setRequests([]);
       } finally {
         setLoading(false);
       }
@@ -62,8 +85,6 @@ const AdminPanel = () => {
       <h1>Админ панель</h1>
       {loading ? (
         <p>Загрузка заявок...</p>
-      ) : error ? (
-        <p>{error}</p>
       ) : (
         <Table>
           <TableHead>
@@ -80,7 +101,7 @@ const AdminPanel = () => {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => handleApprove(request.username)}
+                    onClick={() => handleRequest(request.username, true)}
                     sx={{ marginRight: 1 }}
                   >
                     Принять
@@ -88,7 +109,7 @@ const AdminPanel = () => {
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => handleReject(request.username)}
+                    onClick={() => handleRequest(request.username, false)}
                   >
                     Отклонить
                   </Button>

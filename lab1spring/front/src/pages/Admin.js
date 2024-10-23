@@ -10,8 +10,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const admin = (JSON.parse(localStorage.getItem('roles')) || []).includes('ROLE_ADMIN');
-  const [requestStatus, setRequestStatus] = useState(null); // Состояние для отслеживания статуса запроса
-  const [loading, setLoading] = useState(false); // Состояние для индикатора загрузки
+  const [loading, setLoading] = useState(false);
 
   const handleRequestAdminRights = async () => {
     setLoading(true);
@@ -45,17 +44,14 @@ const Admin = () => {
               }));
               
               navigate('/home');
+              dispatch(setNotification({
+                color: 'success', 
+                message: 'Теперь вы являетесь гойдой'
+              }));
         } catch (error) {
             console.error('Ошибка при отправке данных:', error);
         }
-        dispatch(setNotification({
-          color: 'success', 
-          message: 'Теперь вы являетесь гойдой'
-        }));
       }
-
-      
-      
     } catch (error) {
       dispatch(setNotification({
         color: 'error', 
@@ -76,7 +72,6 @@ const Admin = () => {
           <button onClick={handleRequestAdminRights} disabled={loading}>
             {loading ? 'Отправка запроса...' : 'Запросить права администратора'}
           </button>
-          {requestStatus && <p>{requestStatus}</p>}
         </div>
       )}
     </div>

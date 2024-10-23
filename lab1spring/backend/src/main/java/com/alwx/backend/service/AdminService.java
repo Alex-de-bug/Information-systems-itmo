@@ -46,7 +46,13 @@ public class AdminService {
 
 
     public ResponseEntity<?> editResponces(EditResponse editResponces){
+
+        if(requestForRightsRepository.findByUsername(editResponces.getUsername()).isEmpty()){
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.USER_DOESNT_EXIST.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+
         if(editResponces.getRulling()){
+
             if(userRepository.findByUsername(editResponces.getUsername()).isEmpty()){
                 requestForRightsRepository.deleteById(requestForRightsRepository.findByUsername(editResponces.getUsername()).get().getId());
                 return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.USER_DOESNT_EXIST.getMessage()), HttpStatus.BAD_REQUEST);

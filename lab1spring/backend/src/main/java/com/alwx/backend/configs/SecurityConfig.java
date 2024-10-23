@@ -1,6 +1,5 @@
 package com.alwx.backend.configs;
 
-import java.net.http.WebSocket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 
 import com.alwx.backend.service.UserService;
+import com.alwx.backend.utils.AdminAuthorizationManager;
 import com.alwx.backend.utils.jwt.JwtRequestFilter;
 
 
@@ -80,10 +80,11 @@ public class SecurityConfig{
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
         http
+            .authenticationProvider(daoAuthenticationProvider())
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/user/**").authenticated() 
-                .requestMatchers("/admin").hasRole("ADMIN") 
+                .requestMatchers("/admin/**").access(adminAuthorizationManager())
                 .anyRequest().permitAll() 
             )
             .sessionManagement(session -> session
@@ -122,6 +123,11 @@ public class SecurityConfig{
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager(); 
+    }
+
+    @Bean
+    public AdminAuthorizationManager adminAuthorizationManager() {
+        return new AdminAuthorizationManager(userService);
     }
 
 }

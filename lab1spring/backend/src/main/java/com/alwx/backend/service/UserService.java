@@ -157,7 +157,7 @@ public class UserService implements UserDetailsService {
 
 
         if (userRepository.findByUsername(username).get().getRoles().contains(roleService.getAdminRole())) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ADMIN_ALREAD_EXIST.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
         
 

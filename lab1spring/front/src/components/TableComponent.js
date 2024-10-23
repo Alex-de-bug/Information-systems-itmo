@@ -3,10 +3,12 @@ import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
 
+
 const TableComponent = () => {
 
     const [vehicles, setVehicles] = useState([]);
-    const stompClientRef = useRef(null); // Use useRef to store stompClient
+    const stompClientRef = useRef(null); 
+    
 
     useEffect(() => {
         const token = localStorage.getItem('token');

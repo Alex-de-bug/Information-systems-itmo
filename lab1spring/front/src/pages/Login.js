@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -48,11 +48,11 @@ const Login = () => {
           message: 'Вы успешно вошли!'
         }));
 
-    } catch (error) {
+    }catch (error) {
         console.error('Ошибка при отправке данных:', error);
         dispatch(setNotification({
           color: 'error', 
-          message: error.response.data.message
+          message: error.response ? error.response.data.message : 'Сервер недоступен. Попробуйте позже.'
         }));
     }
     
