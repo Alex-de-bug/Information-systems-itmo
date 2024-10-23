@@ -43,7 +43,7 @@ const Admin = () => {
                 token: response.data.token
               }));
               
-              navigate('/home');
+              navigate('/admin');
               dispatch(setNotification({
                 color: 'success', 
                 message: 'Теперь вы являетесь гойдой'

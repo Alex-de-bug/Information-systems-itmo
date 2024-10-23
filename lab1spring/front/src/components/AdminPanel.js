@@ -39,16 +39,14 @@ const AdminPanel = () => {
                     roles: response.data.roles, 
                     token: response.data.token
                   }));
-                  
-                  navigate('/home');
+                  dispatch(setNotification({
+                    color: 'info', 
+                    message: 'У вас больше нет прав админа'
+                  }));
+                  navigate('/admin');
             } catch (error) {
                 console.error('Ошибка при отправке данных:', error);
-            } finally{
-              dispatch(setNotification({
-                color: 'info', 
-                message: 'У вас больше нет прав админа'
-              }));
-            } 
+            }
         }
         dispatch(setNotification({
           color: 'error', 
@@ -70,6 +68,32 @@ const AdminPanel = () => {
         });
         setRequests(response.data);
       } catch (err) {
+        console.log(err.response.status);
+        if(err.response.status === 403) {
+          try {
+            const response = await axios.get('http://localhost:8080/user/token', {
+                  headers: {
+                      Authorization: `Bearer ${localStorage.getItem("token")}`, 
+                  },
+                });
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('roles', JSON.stringify(response.data.roles));
+                localStorage.setItem('name', response.data.name);
+        
+                dispatch(loginSuccess({
+                  user: response.data.name, 
+                  roles: response.data.roles, 
+                  token: response.data.token
+                }));
+                navigate('/admin');
+                dispatch(setNotification({
+                  color: 'error', 
+                  message: 'У вас больше нет прав админа'
+                }));
+          } catch (error) {
+              console.error('Ошибка при отправке данных:', error);
+          }
+        }
         dispatch(setNotification({
           color: 'error', 
           message: err.response.data.message

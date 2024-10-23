@@ -117,7 +117,7 @@ public class UserService implements UserDetailsService {
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.USER_NOT_FOUND.getMessage()), HttpStatus.BAD_REQUEST);
         }
 
-        if(requestForRightsRepository.findByUsername(username).isPresent()){
+        if(requestForRightsRepository.findByUsername(username).isPresent() && !userRepository.findByRoles(roleService.getAdminRole()).isEmpty()){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.REQUEST_ALREADY_SEND.getMessage()), HttpStatus.BAD_REQUEST);
         }
 
@@ -137,6 +137,9 @@ public class UserService implements UserDetailsService {
             User user = userRepository.findByUsername(username).get();
             user.getRoles().add(roleService.getAdminRole());
             userRepository.save(user);
+            if(requestForRightsRepository.findByUsername(username).isPresent()){
+                requestForRightsRepository.deleteById(requestForRightsRepository.findByUsername(username).get().getId());
+            }
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
 
         }
