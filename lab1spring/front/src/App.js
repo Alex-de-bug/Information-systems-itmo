@@ -47,7 +47,7 @@ function App() {
             <Route 
               path="/admin" 
               element={
-                <ProtectedRoute requiredRole="ROLE_ADMIN" startEndpoint="/home"> 
+                <ProtectedRoute requiredRole="ROLE_USER" startEndpoint="/login"> 
                   <Admin />
                 </ProtectedRoute>
               } 

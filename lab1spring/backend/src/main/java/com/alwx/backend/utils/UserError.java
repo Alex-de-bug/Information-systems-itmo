@@ -12,6 +12,11 @@ public enum UserError {
     TOKEN_EXPIRED("Время жизни токена истекло"),
     TOKEN_INVALID("Неверная подпись токена"),
     LOGIN_INVALID("Логин должен быть более 2х символов и менее 21"),
+    REQUEST_ALREADY_SEND("Вы уже отправили запрос на получение админских прав"),
+    ADMIN_ALREAD_EXIST("Вы админ"),
+    KILL_DEV("Убейте разработчика сайта"),
+    USER_DOESNT_EXIST("Пользователя нет в бд"),
+    USER_ALREADY_HAS_ADMIN("Пользователя уже является админом"),
     PASS_INVALID("Пароль должен быть более 2х символов и менее 21");
 
     private final String message;

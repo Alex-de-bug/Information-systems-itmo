@@ -9,11 +9,16 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alwx.backend.dtos.AdminRightsRequest;
 import com.alwx.backend.dtos.NewVehicle;
 import com.alwx.backend.dtos.SimpleInfoAboutCars;
 import com.alwx.backend.models.Vehicle;
+import com.alwx.backend.service.AuthService;
+import com.alwx.backend.service.UserService;
 import com.alwx.backend.service.VehicleService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,10 +28,17 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin("*")
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private VehicleService vehicleService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private AuthService authService;
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -51,6 +63,19 @@ public class UserController {
             "{\"message\": \"Данные в таблице обновлены\"}");
         
         return response;
+    }
+
+    @PostMapping("/rights")
+    public ResponseEntity<?> getAdminRights(@RequestBody AdminRightsRequest adminRightsRequest){
+        
+        ResponseEntity<?> response = userService.pushReqForAdminRights(adminRightsRequest);
+        
+        return response;
+    }
+
+    @GetMapping("/token")
+    public ResponseEntity<?> updateToken(@RequestHeader(name = "Authorization") String token){
+        return authService.updateAuthToken(token);
     }
 }
 

@@ -43,7 +43,7 @@ const NewVehicleForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8080/vehicles', formData, {
+      const response = await axios.post('http://localhost:8080/user/vehicles', formData, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`, 
             },

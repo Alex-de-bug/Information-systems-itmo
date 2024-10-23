@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { useNavigate } from 'react-router-dom'; 
+import { useLocation, useNavigate } from 'react-router-dom'; 
 import { useDispatch, useSelector } from 'react-redux'; 
 
 import { logout } from '../redux/slices/userSlice';
@@ -12,10 +12,11 @@ import { logout } from '../redux/slices/userSlice';
 
 const NavBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate(); 
   const dispatch = useDispatch();
   var userName = useSelector((state) => state.user.user);
-  const admin = (JSON.parse(localStorage.getItem('roles')) || []).includes('ROLE_ADMIN');
+  const [onAdminPage, setOnAdminPage] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -35,38 +36,56 @@ const NavBar = () => {
     navigate('/login');
   };
 
+  useEffect(() => {
+    setOnAdminPage(location.pathname === '/admin');
+  }, [location.pathname]);
+
+  const handleHomePage = () => {
+    navigate('/');
+  };
+
   const handleAdminPage = () => {
-    navigate('/admin'); 
+    navigate('/admin');
   };
 
   return (
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
-          <Toolbar>
-            {!isLoggedIn ? (
-              <>
-                <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
-                  Дениченко, ISU: 367193
-                </Typography>
-              </>
-            ) : (
-              <>
-                <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
-                LOGIN: {localStorage.getItem("name")}   ROLE: {localStorage.getItem("roles") && localStorage.getItem("roles").includes('ROLE_ADMIN') ? 'ADMIN' : 'USER'}
-                </Typography>
-                { admin && (
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          {!isLoggedIn ? (
+            <>
+              <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
+                Дениченко, ISU: 367193
+              </Typography>
+            </>
+          ) : (
+            <>
+              <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
+                LOGIN: {localStorage.getItem('name')} ROLE:{' '}
+                {localStorage.getItem('roles') &&
+                localStorage.getItem('roles').includes('ROLE_ADMIN')
+                  ? 'ADMIN'
+                  : 'USER'}
+              </Typography>
+              {
+                onAdminPage ? (
+                  <Button color="inherit" onClick={handleHomePage}>
+                    Домой
+                  </Button>
+                ) : (
                   <Button color="inherit" onClick={handleAdminPage}>
                     Управление
                   </Button>
-                )}
-                <Button color="inherit" sx={{ marginLeft: 'auto' }} onClick={handleLogout}>
-                  Выйти
-                </Button>
-              </>
-            )}
-          </Toolbar>
-        </AppBar>
-      </Box>
+                )
+              }
+              <Button color="inherit" sx={{ marginLeft: 'auto' }} onClick={handleLogout}>
+                Выйти
+              </Button>
+            </>
+          )}
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 };
 

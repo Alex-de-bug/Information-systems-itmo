@@ -1,6 +1,8 @@
 package com.alwx.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,13 +12,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alwx.backend.dtos.AdminRightsRequest;
+import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.dtos.RegUserDto;
+import com.alwx.backend.models.RequestForRights;
+import com.alwx.backend.models.Role;
 import com.alwx.backend.models.User;
+import com.alwx.backend.repositories.RequestForRightsRepository;
 import com.alwx.backend.repositories.UserRepository;
+import com.alwx.backend.utils.UserError;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,7 +38,13 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     private RoleService roleService; 
     private PasswordEncoder passwordEncoder; 
+    private RequestForRightsRepository requestForRightsRepository;
 
+
+    @Autowired
+    public void setRequestForRightsRepository(RequestForRightsRepository requestForRightsRepository) {
+        this.requestForRightsRepository = requestForRightsRepository;
+    }
     /**
      * Устанавливает репозиторий пользователей.
      *
@@ -123,5 +138,45 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
         user.setRoles(new ArrayList<>(Arrays.asList(roleService.getUserRole())));
         return userRepository.save(user);
+    }
+
+
+    @Transactional
+    public ResponseEntity<?> pushReqForAdminRights(AdminRightsRequest adminRightsRequest){
+        String username = adminRightsRequest.getUsername();
+
+        if(username.length() == 0){
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.USER_NOT_FOUND.getMessage()), HttpStatus.BAD_REQUEST);
+        }else if(userRepository.findByUsername(username).isEmpty()){
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.USER_NOT_FOUND.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+
+        if(requestForRightsRepository.findByUsername(username).isPresent()){
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.REQUEST_ALREADY_SEND.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+
+
+        if (userRepository.findByUsername(username).get().getRoles().contains(roleService.getAdminRole())) {
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ADMIN_ALREAD_EXIST.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+        
+
+        if(userRepository.findByRoles(roleService.getAdminRole()).isPresent()){
+            RequestForRights requestForRights = new RequestForRights();
+            requestForRights.setUsername(username);
+            requestForRightsRepository.save(requestForRights);
+            return new ResponseEntity<>(HttpStatus.OK);
+
+        }else{
+            User user = userRepository.findByUsername(username).get();
+            user.getRoles().add(roleService.getAdminRole());
+            userRepository.save(user);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+
+        }
+    }
+
+    public ResponseEntity<?> getAllRequests(){
+        return new ResponseEntity<>(requestForRightsRepository.findAll(), HttpStatus.OK);
     }
 }

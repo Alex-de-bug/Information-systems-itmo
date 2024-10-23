@@ -13,7 +13,7 @@ const TableComponent = () => {
 
         const fetchVehicles = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/vehicles', {
+                const response = await axios.get('http://localhost:8080/user/vehicles', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }
@@ -38,8 +38,6 @@ const TableComponent = () => {
                     stompClient.subscribe('/topic/tableUpdates', (message) => {
                         const data = JSON.parse(message.body);
                         console.log(data);
-
-                        // Update the vehicles table when a new message is received
                         fetchVehicles();
                     });
                 },
@@ -49,7 +47,7 @@ const TableComponent = () => {
             });
 
             stompClient.activate();
-            stompClientRef.current = stompClient; // Store the client in the ref
+            stompClientRef.current = stompClient;
         };
 
         connectWebSocket();

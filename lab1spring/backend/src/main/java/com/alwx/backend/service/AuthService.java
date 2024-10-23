@@ -77,4 +77,15 @@ public class AuthService {
         User user = userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername()));
     }
+
+    public ResponseEntity<?> updateAuthToken(String oldToken) {
+        oldToken = oldToken.substring(7);
+        UserDetails userDetails = userService.loadUserByUsername(jwtTokenUtils.getUsername(oldToken));
+        String token = jwtTokenUtils.generateToken(userDetails);
+        return ResponseEntity.ok(
+            new UserWithJwtResponse(
+                jwtTokenUtils.getUsername(token), 
+                userService.loadRolesByUsername(jwtTokenUtils.getUsername(token)).stream().map(Object::toString).collect(Collectors.toList()), 
+                token));
+    }
 }
