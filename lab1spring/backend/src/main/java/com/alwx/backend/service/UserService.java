@@ -16,16 +16,16 @@ import com.alwx.backend.dtos.AdminRightsRequest;
 import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.dtos.RegUserDto;
 import com.alwx.backend.models.RequestForRights;
-import com.alwx.backend.models.Role;
 import com.alwx.backend.models.User;
 import com.alwx.backend.repositories.RequestForRightsRepository;
 import com.alwx.backend.repositories.UserRepository;
 import com.alwx.backend.utils.UserError;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,47 +33,13 @@ import java.util.stream.Collectors;
  * Сервис для управления пользователями и аутентификацией.
  */
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     
-    private UserRepository userRepository;
-    private RoleService roleService; 
-    private PasswordEncoder passwordEncoder; 
-    private RequestForRightsRepository requestForRightsRepository;
-
-
-    @Autowired
-    public void setRequestForRightsRepository(RequestForRightsRepository requestForRightsRepository) {
-        this.requestForRightsRepository = requestForRightsRepository;
-    }
-    /**
-     * Устанавливает репозиторий пользователей.
-     *
-     * @param userRepository репозиторий пользователей
-     */
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    /**
-     * Устанавливает сервис ролей.
-     *
-     * @param roleService сервис для управления ролями
-     */
-    @Autowired
-    public void setRoleService(RoleService roleService) {
-        this.roleService = roleService;
-    }
-
-    /**
-     * Устанавливает кодировщик паролей.
-     *
-     * @param passwordEncoder кодировщик паролей
-     */
-    @Autowired
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final UserRepository userRepository;
+    private final RoleService roleService; 
+    private final PasswordEncoder passwordEncoder; 
+    private final RequestForRightsRepository requestForRightsRepository;
 
     /**
      * Находит пользователя по имени.

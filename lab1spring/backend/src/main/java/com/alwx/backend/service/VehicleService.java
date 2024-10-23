@@ -20,15 +20,14 @@ import com.alwx.backend.repositories.UserRepository;
 import com.alwx.backend.repositories.VehicleRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class VehicleService {
-    @Autowired
-    private VehicleRepository vehicleRepository;
-    @Autowired
-    private CoordinatesRepositury coordinatesRepositury;
-    @Autowired
-    private UserRepository userRepository;
+    private final VehicleRepository vehicleRepository;
+    private final CoordinatesRepositury coordinatesRepositury;
+    private final UserRepository userRepository;
 
     public List<? extends Vehicle> getAllVehicle(){
         return vehicleRepository.findAll();
