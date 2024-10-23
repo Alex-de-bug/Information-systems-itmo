@@ -161,7 +161,7 @@ public class UserService implements UserDetailsService {
         }
         
 
-        if(userRepository.findByRoles(roleService.getAdminRole()).isPresent()){
+        if(!userRepository.findByRoles(roleService.getAdminRole()).isEmpty()){
             RequestForRights requestForRights = new RequestForRights();
             requestForRights.setUsername(username);
             requestForRightsRepository.save(requestForRights);
