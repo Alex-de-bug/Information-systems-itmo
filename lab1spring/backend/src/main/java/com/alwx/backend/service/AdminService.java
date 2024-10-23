@@ -1,9 +1,7 @@
 package com.alwx.backend.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.alwx.backend.dtos.AppError;
@@ -13,36 +11,15 @@ import com.alwx.backend.repositories.RequestForRightsRepository;
 import com.alwx.backend.repositories.UserRepository;
 import com.alwx.backend.utils.UserError;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AdminService {
 
-    private UserRepository userRepository;
-    private RoleService roleService; 
-    private RequestForRightsRepository requestForRightsRepository;
-
-    @Autowired
-    public void setRequestForRightsRepository(RequestForRightsRepository requestForRightsRepository) {
-        this.requestForRightsRepository = requestForRightsRepository;
-    }
-    /**
-     * Устанавливает репозиторий пользователей.
-     *
-     * @param userRepository репозиторий пользователей
-     */
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    /**
-     * Устанавливает сервис ролей.
-     *
-     * @param roleService сервис для управления ролями
-     */
-    @Autowired
-    public void setRoleService(RoleService roleService) {
-        this.roleService = roleService;
-    }
+    private final UserRepository userRepository;
+    private final RoleService roleService; 
+    private final RequestForRightsRepository requestForRightsRepository;
 
 
     public ResponseEntity<?> editResponces(EditResponse editResponces){
