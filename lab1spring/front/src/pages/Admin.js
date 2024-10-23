@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import AdminPanel from '../components/AdminPanel';
 import { loginSuccess, setNotification } from '../redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
+import { Box, Button, Typography } from '@mui/material';
+
 
 
 const Admin = () => {
@@ -64,17 +66,32 @@ const Admin = () => {
 
   return (
     <div>
+      <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      height="100vh"
+    >
       {admin ? (
-        <AdminPanel/>
-      ) : (
-        <div>
-          <p>У вас нет прав администратора.</p>
-          <button onClick={handleRequestAdminRights} disabled={loading}>
-            {loading ? 'Отправка запроса...' : 'Запросить права администратора'}
-          </button>
-        </div>
-      )}
-    </div>
+    <AdminPanel />
+  ) : (
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        У вас нет прав администратора.
+      </Typography>
+      <Button
+        variant="contained"
+        onClick={handleRequestAdminRights}
+        disabled={loading}
+      >
+        {loading ? 'Отправка запроса...' : 'Запросить права администратора'}
+      </Button>
+    </Box>
+  )}
+    </Box>
+
+</div>
   );
 };
 

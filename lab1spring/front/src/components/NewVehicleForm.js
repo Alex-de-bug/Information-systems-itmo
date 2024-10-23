@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 const NewVehicleForm = () => {
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         name: '',
         x: '',
@@ -26,10 +28,10 @@ const NewVehicleForm = () => {
     };
 
     const handleListChange = (e) => {
-    setFormData({
-        ...formData,
-        namesOfOwners: e.target.value.split(',')
-    });
+      setFormData({
+          ...formData,
+          namesOfOwners: e.target.value.split(',')
+      });
     };
 
     const handleCheckboxChange = (e) => {

@@ -22,7 +22,6 @@ const Home = () => {
   return (
     <div>
       <div>
-        <h1>Create a New Vehicle</h1>
         <NewVehicleForm />
         <TableComponent />
       </div>
