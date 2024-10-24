@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { setNotification } from '../redux/slices/userSlice';
+import { Typography, TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, Button, Box, FormControlLabel, Container } from '@mui/material';
+
 
 
 const NewVehicleForm = () => {
@@ -63,67 +65,166 @@ const NewVehicleForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name:</label>
-        <input type="text" name="name" value={formData.name} onChange={handleChange} />
-      </div>
-      <div>
-        <label>X Coordinate:</label>
-        <input type="number" name="x" value={formData.x} onChange={handleChange} />
-      </div>
-      <div>
-        <label>Y Coordinate:</label>
-        <input type="number" step="any" name="y" value={formData.y} onChange={handleChange} />
-      </div>
-      <div>
-        <label>Type:</label>
-        <select name="type" value={formData.type} onChange={handleChange}>
-          <option value="PLANE">PLANE</option>
-          <option value="BOAT">BOAT</option>
-          <option value="BICYCLE">BICYCLE</option>
-        </select>
-      </div>
-      <div>
-        <label>Engine Power:</label>
-        <input type="number" step="any" name="enginePower" value={formData.enginePower} onChange={handleChange}  />
-      </div>
-      <div>
-        <label>Number of Wheels:</label>
-        <input type="number" name="numberOfWheels" value={formData.numberOfWheels} onChange={handleChange}  />
-      </div>
-      <div>
-        <label>Capacity:</label>
-        <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} />
-      </div>
-      <div>
-        <label>Distance Travelled:</label>
-        <input type="number" step="any" name="distanceTravelled" value={formData.distanceTravelled} onChange={handleChange}/>
-      </div>
-      <div>
-        <label>Fuel Consumption:</label>
-        <input type="number" step="any" name="fuelConsumption" value={formData.fuelConsumption} onChange={handleChange}/>
-      </div>
-      <div>
-        <label>Fuel Type:</label>
-        <select name="fuelType" value={formData.fuelType} onChange={handleChange}>
-          <option value="KEROSENE">KEROSENE</option>
-          <option value="ELECTRICITY">ELECTRICITY</option>
-          <option value="DIESEL">DIESEL</option>
-          <option value="MANPOWER">MANPOWER</option>
-          <option value="PLASMA">PLASMA</option>
-        </select>
-      </div>
-      <div>
-        <label>Names of Owners (comma-separated):</label>
-        <input type="text" name="namesOfOwners" value={formData.namesOfOwners.join(', ')} onChange={handleListChange} />
-      </div>
-      <div>
-        <label>Permission to Edit:</label>
-        <input type="checkbox" name="permissionToEdit" checked={formData.permissionToEdit} onChange={handleCheckboxChange} />
-      </div>
-      <button type="submit">Submit</button>
-    </form>
+    <Container 
+        sx={{ 
+          backgroundColor: 'rgba(0, 0, 0, 0.87)', 
+          padding: 1, 
+          borderRadius: 2, 
+          color: 'white',
+          '& .MuiInputLabel-root': { 
+            color: 'white',
+          },
+          '& .MuiOutlinedInput-root': { 
+            color: 'white',
+            '& fieldset': {
+              borderColor: 'rgba(255, 255, 255, 0.23)',
+            },
+            '&:hover fieldset': {
+              borderColor: 'white',
+            },
+          },
+          '& .MuiSelect-icon': { 
+            color: 'white',
+          },
+          '& .MuiFormControlLabel-label': { 
+            color: 'white',
+          }
+        }}
+      >
+        <Typography variant="h4">
+          Новая тачила
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} sx={{ '& .MuiTextField-root': { m: 1, width: '30%' }, mt: 3 }}>
+          <TextField
+            label="Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            helperText="type: string"
+            fullWidth
+          />
+          <TextField
+            label="X Coordinate"
+            name="x"
+            type="number"
+            value={formData.x}
+            onChange={handleChange}
+            fullWidth
+            helperText="type: long"
+          />
+          <TextField
+            label="Y Coordinate"
+            name="y"
+            type="number"
+            value={formData.y}
+            onChange={handleChange}
+            fullWidth
+            helperText="type: double"
+          />
+          <FormControl sx={{ m: 1 }}>
+            <InputLabel>Type</InputLabel>
+            <Select
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              label="Type"
+            >
+              <MenuItem value="PLANE">PLANE</MenuItem>
+              <MenuItem value="BOAT">BOAT</MenuItem>
+              <MenuItem value="BICYCLE">BICYCLE</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label="Engine Power"
+            name="enginePower"
+            type="number"
+            value={formData.enginePower}
+            onChange={handleChange}
+            fullWidth
+            helperText="type: double"
+          />
+          <TextField
+            label="Number of Wheels"
+            name="numberOfWheels"
+            type="number"
+            value={formData.numberOfWheels}
+            onChange={handleChange}
+            fullWidth
+            helperText="type: long"
+          />
+          <TextField
+            label="Capacity"
+            name="capacity"
+            type="number"
+            value={formData.capacity}
+            onChange={handleChange}
+            fullWidth
+            helperText="type: long"
+          />
+          <TextField
+            label="Distance Travelled"
+            name="distanceTravelled"
+            type="number"
+            value={formData.distanceTravelled}
+            onChange={handleChange}
+            fullWidth
+            helperText="type: double"
+          />
+          <TextField
+            label="Fuel Consumption"
+            name="fuelConsumption"
+            type="number"
+            value={formData.fuelConsumption}
+            onChange={handleChange}
+            fullWidth
+            helperText="type: float"
+          />
+          <FormControl sx={{ m: 1 }}>
+            <InputLabel>Fuel Type</InputLabel>
+            <Select
+              name="fuelType"
+              value={formData.fuelType}
+              onChange={handleChange}
+              label="Fuel Type"
+            >
+              <MenuItem value="KEROSENE">KEROSENE</MenuItem>
+              <MenuItem value="ELECTRICITY">ELECTRICITY</MenuItem>
+              <MenuItem value="DIESEL">DIESEL</MenuItem>
+              <MenuItem value="MANPOWER">MANPOWER</MenuItem>
+              <MenuItem value="PLASMA">PLASMA</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label="Names of Owners"
+            name="namesOfOwners"
+            value={formData.namesOfOwners.join(', ')}
+            onChange={handleListChange}
+            helperText="exampte: alex, tom"
+            fullWidth
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="permissionToEdit"
+                checked={formData.permissionToEdit}
+                onChange={handleCheckboxChange}
+              />
+            }
+            label="Permission to Edit"
+            sx={{ m: 1 }}
+          />
+          <Box sx={{ mt: 2, mb: 1 }}>
+            <Button 
+              type="submit" 
+              variant="contained" 
+              color="primary"
+              fullWidth
+            >
+              Создать 
+            </Button>
+          </Box>
+        </Box>
+  </Container>
   );
 };
 

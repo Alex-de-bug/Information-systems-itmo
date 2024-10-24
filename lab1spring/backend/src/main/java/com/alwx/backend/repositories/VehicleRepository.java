@@ -11,4 +11,6 @@ import com.alwx.backend.models.Vehicle;
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long>  {
     Optional<Vehicle> findByName(String name);
+    List<Vehicle> findByCoordinatesId(Long coordinatesId);
+
 }

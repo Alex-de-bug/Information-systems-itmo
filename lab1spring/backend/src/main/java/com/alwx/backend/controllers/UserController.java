@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -60,6 +62,19 @@ public class UserController {
         return request;
     }
 
+    @DeleteMapping("/vehicles/{id}")
+    public ResponseEntity<?> deleteVehicle(@PathVariable("id") Long id, @RequestHeader(name = "Authorization") String token){
+        String jwtToken = token.substring(7);
+        ResponseEntity<?> response = vehicleService.deleteVehicle(id, jwtToken);
+        if(response.getStatusCode().equals(HttpStatus.OK)){
+            System.out.println("Данные в таблице обновлены");
+            messagingTemplate.convertAndSend("/topic/tableUpdates", 
+                "{\"message\": \"Данные в таблице обновлены\"}");
+        }
+
+        return response;
+    }
+
     @PostMapping("/vehicles")
     public ResponseEntity<?> createVehicle(@Valid @RequestBody NewVehicle newVehicle, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -73,9 +88,11 @@ public class UserController {
         }
 
         ResponseEntity<?> response = vehicleService.createVehicle(newVehicle);
-        
-        messagingTemplate.convertAndSend("/topic/tableUpdates", 
-            "{\"message\": \"Данные в таблице обновлены\"}");
+        if(response.getStatusCode().equals(HttpStatus.OK)){
+            System.out.println("Данные в таблице обновлены");
+            messagingTemplate.convertAndSend("/topic/tableUpdates", 
+                "{\"message\": \"Данные в таблице обновлены\"}");
+        }
         
         return response;
     }

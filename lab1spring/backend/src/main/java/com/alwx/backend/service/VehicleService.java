@@ -20,6 +20,7 @@ import com.alwx.backend.models.enums.VehicleType;
 import com.alwx.backend.repositories.CoordinatesRepositury;
 import com.alwx.backend.repositories.UserRepository;
 import com.alwx.backend.repositories.VehicleRepository;
+import com.alwx.backend.utils.jwt.JwtTokenUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,39 @@ public class VehicleService {
     private final VehicleRepository vehicleRepository;
     private final CoordinatesRepositury coordinatesRepositury;
     private final UserRepository userRepository;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final RoleService roleService;
+    
 
     public List<? extends Vehicle> getAllVehicle(){
         return vehicleRepository.findAll();
+    }
+
+    public ResponseEntity<?> deleteVehicle(Long id, String token){
+        if(!userRepository.findByUsername(jwtTokenUtil.getUsername(token)).isEmpty()){
+            User user = userRepository.findByUsername(jwtTokenUtil.getUsername(token)).get();
+            if(vehicleRepository.findById(id).isPresent()){
+                if(vehicleRepository.findById(id).get().getUsers().stream().anyMatch(u -> u.getUsername().equals(user.getUsername())) || (user.getRoles().contains(roleService.getAdminRole()) && vehicleRepository.findById(id).get().getPermissionToEdit())){
+                    Vehicle vehicle = vehicleRepository.findById(id).get();
+                    Long coordinatesId = vehicle.getCoordinates().getId();
+                    
+                    vehicle.setCoordinates(null);
+                    vehicleRepository.save(vehicle); 
+                    vehicleRepository.delete(vehicle);
+                    if(vehicleRepository.findByCoordinatesId(coordinatesId).isEmpty()){
+                        coordinatesRepositury.deleteById(coordinatesId);
+                    }
+                    
+                    return new ResponseEntity<>(HttpStatus.OK);
+                }else{
+                    return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "У вас нет прав удалить эту машину"), HttpStatus.BAD_REQUEST);
+                }
+            }else{
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Машина с таким ID не найдена"), HttpStatus.BAD_REQUEST);
+            }
+        }else{
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Вы не можете удалить эту машину, ваш токен не действителен или не соответствует пользователю"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Transactional

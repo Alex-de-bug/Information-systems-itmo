@@ -2,12 +2,31 @@ import React, { useEffect, useState, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
+import { 
+    Table, 
+    TableBody, 
+    TableCell, 
+    TableContainer, 
+    TableHead, 
+    TableRow, 
+    Paper,
+    TablePagination
+  } from '@mui/material';
+  import VehicleTableRow from './VehicleTableRow';
+
+  
 
 
 const TableComponent = () => {
 
     const [vehicles, setVehicles] = useState([]);
     const stompClientRef = useRef(null); 
+    const [page, setPage] = useState(0);
+    const [rowsPerPage] = useState(10);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
     
 
     useEffect(() => {
@@ -61,47 +80,42 @@ const TableComponent = () => {
     }, []);
 
     return (
-        <div>
-            <h2>Vehicles Table</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>X</th>
-                        <th>Y</th>
-                        <th>Type</th>
-                        <th>Engine Power</th>
-                        <th>Number of Wheels</th>
-                        <th>Capacity</th>
-                        <th>Distance Travelled</th>
-                        <th>Fuel Consumption</th>
-                        <th>Fuel Type</th>
-                        <th>Users</th>
-                        <th>Permission to Edit</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody">
-                {[...vehicles].reverse().map((vehicle) => (
-                        <tr key={vehicle.id}>
-                            <td>{vehicle.id}</td>
-                            <td>{vehicle.name}</td>
-                            <td>{vehicle.x}</td>
-                            <td>{vehicle.y}</td>
-                            <td>{vehicle.type}</td>
-                            <td>{vehicle.enginePower}</td>
-                            <td>{vehicle.numberOfWheels}</td>
-                            <td>{vehicle.capacity}</td>
-                            <td>{vehicle.distanceTravelled}</td>
-                            <td>{vehicle.fuelConsumption}</td>
-                            <td>{vehicle.fuelType}</td>
-                            <td>{vehicle.namesUsers.join(', ')}</td>
-                            <td>{vehicle.permissionToEdit ? 'Yes' : 'No'}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+        <Paper sx={{borderRadius: 2}}>
+            <TableContainer>
+                <Table size="small" sx={{ tableLayout: 'fixed' }}>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Тип тачки</TableCell>
+                            <TableCell>Топливо</TableCell>
+                            <TableCell sx={{width: '15%'}}>Actions</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {[...vehicles]
+                            .reverse()
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((vehicle) => (
+                                <VehicleTableRow 
+                                    key={vehicle.id}
+                                    vehicle={vehicle}
+                                    currentUser={localStorage.getItem('name')}
+                                    userRoles={localStorage.getItem('roles')}
+                                    vehicles={vehicles}
+                                />
+                            ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+                <TablePagination
+                component="div"
+                count={vehicles.length}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                rowsPerPageOptions={[10]}
+            />
+        </Paper>
     );
 };
 
