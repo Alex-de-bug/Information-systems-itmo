@@ -23,28 +23,28 @@ public class NewVehicle {
     @Pattern(regexp = "^(PLANE|BOAT|BICYCLE)$", message = "Неверный тип транспорта")
     private String type;
 
-    @NotNull(message = "Engine power is required")
-    @Positive(message = "Engine power must be positive")
+    @NotNull(message = "Мощность двигателя обязательна")
+    @Positive(message = "Мощность двигателя должна быть положительной")
     private Double enginePower;
 
-    @Min(value = 1, message = "Number of wheels must be at least 1")
+    @Min(value = 1, message = "Количество колес должно быть не менее 1")
     private long numberOfWheels;
 
-    @NotNull(message = "Capacity is required")
-    @Positive(message = "Capacity must be positive")
+    @NotNull(message = "Вместимость обязательна")
+    @Positive(message = "Вместимость должна быть положительной")
     private Long capacity;
 
-    @PositiveOrZero(message = "Distance travelled cannot be negative")
+    @PositiveOrZero(message = "Пройденное расстояние не может быть отрицательным")
     private Double distanceTravelled;
 
-    @Positive(message = "Fuel consumption must be positive")
+    @Positive(message = "Расход топлива должен быть положительным")
     private Float fuelConsumption;
 
-    @NotBlank(message = "Fuel type cannot be empty")
+    @NotBlank(message = "Тип топлива не может быть пустым")
     @Pattern(regexp = "^(KEROSENE|DIESEL|ELECTRICITY|MANPOWER|PLASMA)$", message = "Неверный тип топлива")
     private String fuelType;
 
-    @NotEmpty(message = "Names of owners cannot be empty")
+    @NotEmpty(message = "Имена владельцев не могут быть пустыми")
     private List<String> namesOfOwners;
 
     private Boolean permissionToEdit;

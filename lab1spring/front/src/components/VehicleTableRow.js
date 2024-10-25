@@ -7,7 +7,10 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
+
 import DeleteVehicleDialog from './DeleteVehicleDialog';
+import EditVehicleDialog from './EditVehicleDialog';
+
 
 
 
@@ -15,19 +18,11 @@ import DeleteVehicleDialog from './DeleteVehicleDialog';
 const VehicleTableRow = ({ vehicle, currentUser, userRoles, vehicles }) => {
   const [openInfo, setOpenInfo] = useState(false);
   const [openReassignDialog, setOpenReassignDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
 
   const canModify = 
     (vehicle.permissionToEdit && (userRoles.includes('ADMIN'))) || vehicle.namesUsers.includes(currentUser);
 
-//Редактирование машины --------------------------------------------------------
-  const handleEdit = async () => {
-    try {
-      console.log('Editing vehicle:', vehicle.id);
-    } catch (error) {
-      console.error('Error editing vehicle:', error);
-    }
-  };
-//Редактирование машины --------------------------------------------------------
 
 
   return (
@@ -50,17 +45,17 @@ const VehicleTableRow = ({ vehicle, currentUser, userRoles, vehicles }) => {
                 <>
                     <IconButton 
                         size="small" 
-                        onClick={handleEdit}
+                        onClick={() => setOpenEditDialog(true)}
                         color="primary"
                     >
-                    <EditIcon />
+                        <EditIcon />
                     </IconButton>
                     <IconButton 
                         size="small" 
                         onClick={() => setOpenReassignDialog(true)}
                         color="error"
                     >
-                    <DeleteIcon />
+                        <DeleteIcon />
                     </IconButton>
                 </>
                 )}
@@ -95,7 +90,12 @@ const VehicleTableRow = ({ vehicle, currentUser, userRoles, vehicles }) => {
                 vehicles={vehicles}
                 currentUser={currentUser}
                 userRoles={userRoles}
-            />
+        />
+        <EditVehicleDialog 
+                open={openEditDialog}
+                onClose={() => setOpenEditDialog(false)}
+                vehicle={vehicle}
+        />
     </>
   );
 };

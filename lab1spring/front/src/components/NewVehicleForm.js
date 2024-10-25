@@ -34,7 +34,7 @@ const NewVehicleForm = () => {
     const handleListChange = (e) => {
       setFormData({
           ...formData,
-          namesOfOwners: e.target.value.split(',')
+          namesOfOwners: e.target.value.split(' ')
       });
     };
 
@@ -96,7 +96,7 @@ const NewVehicleForm = () => {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ '& .MuiTextField-root': { m: 1, width: '30%' }, mt: 3 }}>
           <TextField
-            label="Name"
+            label="Название"
             name="name"
             value={formData.name}
             onChange={handleChange}
@@ -104,7 +104,7 @@ const NewVehicleForm = () => {
             fullWidth
           />
           <TextField
-            label="X Coordinate"
+            label="X Координата"
             name="x"
             type="number"
             value={formData.x}
@@ -113,7 +113,7 @@ const NewVehicleForm = () => {
             helperText="type: long"
           />
           <TextField
-            label="Y Coordinate"
+            label="Y Координата"
             name="y"
             type="number"
             value={formData.y}
@@ -122,20 +122,20 @@ const NewVehicleForm = () => {
             helperText="type: double"
           />
           <FormControl sx={{ m: 1 }}>
-            <InputLabel>Type</InputLabel>
+            <InputLabel>Тип ТС</InputLabel>
             <Select
               name="type"
               value={formData.type}
               onChange={handleChange}
               label="Type"
             >
-              <MenuItem value="PLANE">PLANE</MenuItem>
-              <MenuItem value="BOAT">BOAT</MenuItem>
-              <MenuItem value="BICYCLE">BICYCLE</MenuItem>
+              <MenuItem value="PLANE">Самолёт</MenuItem>
+              <MenuItem value="BOAT">Лодка</MenuItem>
+              <MenuItem value="BICYCLE">Велосипед</MenuItem>
             </Select>
           </FormControl>
           <TextField
-            label="Engine Power"
+            label="Мощность двигателя"
             name="enginePower"
             type="number"
             value={formData.enginePower}
@@ -144,7 +144,7 @@ const NewVehicleForm = () => {
             helperText="type: double"
           />
           <TextField
-            label="Number of Wheels"
+            label="Количество колёс"
             name="numberOfWheels"
             type="number"
             value={formData.numberOfWheels}
@@ -153,7 +153,7 @@ const NewVehicleForm = () => {
             helperText="type: long"
           />
           <TextField
-            label="Capacity"
+            label="Вместимость"
             name="capacity"
             type="number"
             value={formData.capacity}
@@ -162,7 +162,7 @@ const NewVehicleForm = () => {
             helperText="type: long"
           />
           <TextField
-            label="Distance Travelled"
+            label="Пройденный путь"
             name="distanceTravelled"
             type="number"
             value={formData.distanceTravelled}
@@ -171,7 +171,7 @@ const NewVehicleForm = () => {
             helperText="type: double"
           />
           <TextField
-            label="Fuel Consumption"
+            label="Расход топлива"
             name="fuelConsumption"
             type="number"
             value={formData.fuelConsumption}
@@ -180,26 +180,26 @@ const NewVehicleForm = () => {
             helperText="type: float"
           />
           <FormControl sx={{ m: 1 }}>
-            <InputLabel>Fuel Type</InputLabel>
+            <InputLabel>Тип топлива</InputLabel>
             <Select
               name="fuelType"
               value={formData.fuelType}
               onChange={handleChange}
               label="Fuel Type"
             >
-              <MenuItem value="KEROSENE">KEROSENE</MenuItem>
-              <MenuItem value="ELECTRICITY">ELECTRICITY</MenuItem>
-              <MenuItem value="DIESEL">DIESEL</MenuItem>
-              <MenuItem value="MANPOWER">MANPOWER</MenuItem>
-              <MenuItem value="PLASMA">PLASMA</MenuItem>
+              <MenuItem value="KEROSENE">Керосин</MenuItem>
+              <MenuItem value="ELECTRICITY">Электричество</MenuItem>
+              <MenuItem value="DIESEL">Дизель</MenuItem>
+              <MenuItem value="MANPOWER">Человеческие усилия</MenuItem>
+              <MenuItem value="PLASMA">Плазма</MenuItem>
             </Select>
           </FormControl>
           <TextField
-            label="Names of Owners"
+            label="Создатели (через пробел)"
             name="namesOfOwners"
-            value={formData.namesOfOwners.join(', ')}
+            value={formData.namesOfOwners.join(' ')}
             onChange={handleListChange}
-            helperText="exampte: alex, tom"
+            helperText="пример: alex tom"
             fullWidth
           />
           <FormControlLabel
