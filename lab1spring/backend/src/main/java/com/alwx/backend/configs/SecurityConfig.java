@@ -35,31 +35,16 @@ public class SecurityConfig{
     private JwtRequestFilter jwtRequestFilter;
     private PasswordEncoder passwordEncoder;
 
-    /**
-     * Устанавливает кодировщик паролей
-     *
-     * @param passwordEncoder кодировщик паролей
-     */
     @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * Устанавливает сервис пользователя для аутентификации
-     *
-     * @param userService сервис пользователя
-     */
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    /**
-     * Устанавливает фильтр запросов JWT для обработки аутентификации
-     *
-     * @param jwtRequestFilter фильтр запросов JWT
-     */
     @Autowired
     public void setJwtRequestFilter(JwtRequestFilter jwtRequestFilter) {
         this.jwtRequestFilter = jwtRequestFilter;

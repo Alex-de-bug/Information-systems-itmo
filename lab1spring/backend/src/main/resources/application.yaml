@@ -19,5 +19,6 @@ spring:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     open-in-view: false
 
-  main:
-    allow-circular-references: true
+logging:
+  level:
+    org.springframework.security.config.annotation.authentication.configuration: ERROR
