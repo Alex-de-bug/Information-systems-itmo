@@ -18,7 +18,6 @@ public class RequestVehicle {
 
     @NotNull(message = "Координата Y обязательна")
     @Max(value = 695, message = "Координата Y должна быть меньше 695")
-    @Min(value = (long) Double.MIN_VALUE, message = "Координата Y должна быть больше 4.9*10^-324")
     private Double y;
 
     @NotBlank(message = "Тип транспорта обязателен")

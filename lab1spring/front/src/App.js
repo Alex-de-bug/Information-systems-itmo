@@ -9,6 +9,7 @@ import NavBar from './components/NavBar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import Notification from './components/Notification';
+import RoulettePage from './pages/RoulettePage';
 
 const darkTheme = createTheme({
   palette: {
@@ -36,6 +37,7 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/win" element={<RoulettePage />} />
             <Route 
               path="/home" 
               element={
