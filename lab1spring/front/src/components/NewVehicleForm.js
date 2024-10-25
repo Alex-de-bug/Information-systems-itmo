@@ -210,8 +210,8 @@ const NewVehicleForm = () => {
                 onChange={handleCheckboxChange}
               />
             }
-            label="Permission to Edit"
-            sx={{ m: 1 }}
+            label="Разрешение на редактирование"
+            sx={{ m: 1.3 }}
           />
           <Box sx={{ mt: 2, mb: 1 }}>
             <Button 

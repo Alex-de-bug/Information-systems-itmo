@@ -22,7 +22,7 @@ function App() {
       <Box
         sx={{
           minHeight: '100vh',
-          backgroundImage: `url('/bg1.jpg')`, 
+          backgroundImage: `url('/bg.jpg')`, 
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',

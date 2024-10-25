@@ -20,7 +20,7 @@ public class NewVehicle {
     private Double y;
 
     @NotBlank(message = "Неверный тип транспорта")
-    @Pattern(regexp = "^(CAR|BOAT|BICYCLE|MOTORCYCLE)$", message = "Неверный тип транспорта")
+    @Pattern(regexp = "^(PLANE|BOAT|BICYCLE)$", message = "Неверный тип транспорта")
     private String type;
 
     @NotNull(message = "Engine power is required")
@@ -41,6 +41,7 @@ public class NewVehicle {
     private Float fuelConsumption;
 
     @NotBlank(message = "Fuel type cannot be empty")
+    @Pattern(regexp = "^(KEROSENE|DIESEL|ELECTRICITY|MANPOWER|PLASMA)$", message = "Неверный тип топлива")
     private String fuelType;
 
     @NotEmpty(message = "Names of owners cannot be empty")

@@ -63,9 +63,8 @@ public class UserController {
     }
 
     @DeleteMapping("/vehicles/{id}")
-    public ResponseEntity<?> deleteVehicle(@PathVariable("id") Long id, @RequestHeader(name = "Authorization") String token){
-        String jwtToken = token.substring(7);
-        ResponseEntity<?> response = vehicleService.deleteVehicle(id, jwtToken);
+    public ResponseEntity<?> deleteVehicle(@PathVariable("id") Long id, @RequestHeader(name = "Authorization") String token, @RequestHeader(name = "Reassign-Vehicle-Id") String reassignId){
+        ResponseEntity<?> response = vehicleService.deleteVehicle(id, token.substring(7), reassignId);
         if(response.getStatusCode().equals(HttpStatus.OK)){
             System.out.println("Данные в таблице обновлены");
             messagingTemplate.convertAndSend("/topic/tableUpdates", 

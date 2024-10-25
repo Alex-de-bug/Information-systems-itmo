@@ -39,30 +39,45 @@ public class VehicleService {
         return vehicleRepository.findAll();
     }
 
-    public ResponseEntity<?> deleteVehicle(Long id, String token){
+    public ResponseEntity<?> deleteVehicle(Long id, String token, String reassignId){
         if(!userRepository.findByUsername(jwtTokenUtil.getUsername(token)).isEmpty()){
             User user = userRepository.findByUsername(jwtTokenUtil.getUsername(token)).get();
             if(vehicleRepository.findById(id).isPresent()){
                 if(vehicleRepository.findById(id).get().getUsers().stream().anyMatch(u -> u.getUsername().equals(user.getUsername())) || (user.getRoles().contains(roleService.getAdminRole()) && vehicleRepository.findById(id).get().getPermissionToEdit())){
                     Vehicle vehicle = vehicleRepository.findById(id).get();
                     Long coordinatesId = vehicle.getCoordinates().getId();
-                    
-                    vehicle.setCoordinates(null);
-                    vehicleRepository.save(vehicle); 
-                    vehicleRepository.delete(vehicle);
-                    if(vehicleRepository.findByCoordinatesId(coordinatesId).isEmpty()){
-                        coordinatesRepositury.deleteById(coordinatesId);
+                    if(reassignId.equals("") || reassignId == null || reassignId.isEmpty()){
+                        if(vehicleRepository.findByCoordinatesId(coordinatesId).isEmpty()){
+                            coordinatesRepositury.deleteById(coordinatesId);
+                        }
+                    }else{
+                        if(vehicleRepository.findById(Long.parseLong(reassignId)).isPresent()){
+                            if((vehicleRepository.findById(Long.parseLong(reassignId)).get().getUsers().isEmpty() && userRepository.findByUsername(jwtTokenUtil.getUsername(token)).get().getRoles().contains(roleService.getAdminRole())) || vehicleRepository.findById(Long.parseLong(reassignId)).get().getUsers().stream().map(u -> u.getUsername()).anyMatch(username -> username.equals(jwtTokenUtil.getUsername(token)))){
+                                Vehicle reassignVehicle = vehicleRepository.findById(Long.parseLong(reassignId)).get();
+                                reassignVehicle.setCoordinates(vehicle.getCoordinates());
+                                vehicleRepository.save(reassignVehicle);
+                            }else{
+                                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Вы не можете переназначить этот тс, так как она не принадлежит вам"), HttpStatus.BAD_REQUEST);
+                            }
+                            
+                        }else{
+                            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "ТС с таким ID для переназначения не найдено"), HttpStatus.BAD_REQUEST);
+                        }
                     }
+
+                    vehicle.setCoordinates(null);
+                    vehicleRepository.delete(vehicle);
                     
                     return new ResponseEntity<>(HttpStatus.OK);
                 }else{
-                    return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "У вас нет прав удалить эту машину"), HttpStatus.BAD_REQUEST);
+                    String name = "У вас нет прав удалить этот ТС" + vehicleRepository.findById(id).get().getName();
+                    return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), name), HttpStatus.BAD_REQUEST);
                 }
             }else{
-                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Машина с таким ID не найдена"), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "ТС с таким ID не найдено"), HttpStatus.BAD_REQUEST);
             }
         }else{
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Вы не можете удалить эту машину, ваш токен не действителен или не соответствует пользователю"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Вы не можете удалить этот ТС, ваш токен не действителен или не соответствует пользователю"), HttpStatus.BAD_REQUEST);
         }
     }
 
