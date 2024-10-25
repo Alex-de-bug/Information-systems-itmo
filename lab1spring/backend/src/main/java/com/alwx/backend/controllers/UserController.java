@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alwx.backend.dtos.AdminRightsRequest;
 import com.alwx.backend.dtos.AppError;
-import com.alwx.backend.dtos.NewVehicle;
+import com.alwx.backend.dtos.RequestVehicle;
 import com.alwx.backend.dtos.SimpleInfoAboutCars;
 import com.alwx.backend.models.Vehicle;
 import com.alwx.backend.service.AuthService;
@@ -62,6 +63,26 @@ public class UserController {
         return request;
     }
 
+    // @PatchMapping("/vehicles/{id}")
+    // public ResponseEntity<?> updateVehicle(@PathVariable("id") Long id, @Valid @RequestBody NewVehicle newVehicle, BindingResult bindingResult){
+
+    //     if (bindingResult.hasErrors()) {
+    //         List<String> errors = bindingResult.getAllErrors()
+    //             .stream()
+    //             .map(DefaultMessageSourceResolvable::getDefaultMessage)
+    //             .collect(Collectors.toList());
+    //         return ResponseEntity.badRequest().body(new AppError(HttpStatus.BAD_REQUEST.value(), errors.toString()));
+    //     }
+
+    //     ResponseEntity<?> response = vehicleService.updateVehicle(id, newVehicle);
+    //     if(response.getStatusCode().equals(HttpStatus.OK)){
+    //         System.out.println("Данные в таблице обновлены");
+    //         messagingTemplate.convertAndSend("/topic/tableUpdates", 
+    //             "{\"message\": \"Данные в таблице обновлены\"}");
+    //     }
+    //     return response;
+    // }
+
     @DeleteMapping("/vehicles/{id}")
     public ResponseEntity<?> deleteVehicle(@PathVariable("id") Long id, @RequestHeader(name = "Authorization") String token, @RequestHeader(name = "Reassign-Vehicle-Id") String reassignId){
         ResponseEntity<?> response = vehicleService.deleteVehicle(id, token.substring(7), reassignId);
@@ -75,7 +96,7 @@ public class UserController {
     }
 
     @PostMapping("/vehicles")
-    public ResponseEntity<?> createVehicle(@Valid @RequestBody NewVehicle newVehicle, BindingResult bindingResult) {
+    public ResponseEntity<?> createVehicle(@Valid @RequestBody RequestVehicle newVehicle, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
                 .stream()
