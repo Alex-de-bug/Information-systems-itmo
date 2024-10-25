@@ -35,27 +35,48 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
-
+/**
+ * Контроллер для работы с задачами пользователей.
+ */
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin("*")
 @RequestMapping("/user")
 public class UserController {
 
+    /**
+     * Сервис для работы с автомобилями.
+     */
     @Autowired
     private VehicleService vehicleService;
 
+    /**
+     * Сервис для работы с пользователями.
+     */
     @Autowired
     private UserService userService;
 
+    /**
+     * Сервис для работы с аутентификацией и регистрацией пользователей.
+     */
     @Autowired
     private AuthService authService;
 
+    /**
+     * Сервис для логирования действий пользователей.
+     */
     @Autowired
     private UserActionService userActionService;
 
+    /**
+     * Шаблон для отправки сообщений через WebSocket.
+     */
     private final SimpMessagingTemplate messagingTemplate;
 
+    /**
+     * Получает таблицу с автомобилями для пользователей.
+     * @return Список с информацией о автомобилях
+     */
     @GetMapping("/vehicles")
     public List<SimpleInfoAboutCars> getTableWithVehicle(){
         
@@ -68,6 +89,14 @@ public class UserController {
         return request;
     }
 
+    /**
+     * Обновляет информацию о автомобиле.
+     * @param token Токен аутентификации
+     * @param id Идентификатор автомобиля
+     * @param newVehicle Объект с новой информацией о автомобиле
+     * @param bindingResult Результат валидации данных
+     * @return ResponseEntity с результатом обновления
+     */
     @PatchMapping("/vehicles/{id}")
     public ResponseEntity<?> updateVehicle(@RequestHeader(name = "Authorization") String token, @PathVariable("id") Long id, @Valid @RequestBody RequestVehicle newVehicle, BindingResult bindingResult){
 
@@ -88,6 +117,13 @@ public class UserController {
         return response;
     }
 
+    /**
+     * Удаляет автомобиль.
+     * @param id Идентификатор автомобиля
+     * @param token Токен аутентификации
+     * @param reassignId Идентификатор автомобиля для переназначения координат
+     * @return ResponseEntity с результатом удаления
+     */
     @DeleteMapping("/vehicles/{id}")
     public ResponseEntity<?> deleteVehicle(@PathVariable("id") Long id, @RequestHeader(name = "Authorization") String token, @RequestHeader(name = "Reassign-Vehicle-Id") String reassignId){
         ResponseEntity<?> response = vehicleService.deleteVehicle(id, token.substring(7), reassignId);
@@ -100,6 +136,13 @@ public class UserController {
         return response;
     }
 
+    /**
+     * Создает новый автомобиль.
+     * @param token Токен аутентификации
+     * @param newVehicle Объект с новой информацией о автомобиле
+     * @param bindingResult Результат валидации данных, который проверяется на уровне dto
+     * @return ResponseEntity с результатом создания
+     */
     @PostMapping("/vehicles")
     public ResponseEntity<?> createVehicle(@RequestHeader(name = "Authorization") String token, @Valid @RequestBody RequestVehicle newVehicle, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -123,6 +166,11 @@ public class UserController {
         return response;
     }
 
+    /**
+     * Отправляет запрос на получение прав администратора.
+     * @param adminRightsRequest Объект с данными запроса
+     * @return ResponseEntity с результатом запроса
+     */
     @PostMapping("/rights")
     public ResponseEntity<?> getAdminRights(@RequestBody AdminRightsRequest adminRightsRequest){
         
@@ -131,6 +179,11 @@ public class UserController {
         return response;
     }
 
+    /**
+     * Обновляет токен аутентификации.
+     * @param token Токен аутентификации
+     * @return ResponseEntity с обновленным токеном
+     */
     @GetMapping("/token")
     public ResponseEntity<?> updateToken(@RequestHeader(name = "Authorization") String token){
         return authService.updateAuthToken(token);

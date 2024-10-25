@@ -24,6 +24,10 @@ public class SimpleInfoAboutCars {
     private List<String> namesUsers;
     private Boolean permissionToEdit;
 
+    /**
+     * Конструктор для создания объекта SimpleInfoAboutCars.
+     * @param vehicle Объект Vehicle, который будет преобразован в SimpleInfoAboutCars
+     */
     public SimpleInfoAboutCars(Vehicle vehicle){
         this.id = vehicle.getId();
         this.name = vehicle.getName();

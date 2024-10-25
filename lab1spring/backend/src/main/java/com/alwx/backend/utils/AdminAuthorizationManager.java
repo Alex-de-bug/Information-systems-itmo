@@ -9,13 +9,26 @@ import java.util.function.Supplier;
 
 import com.alwx.backend.service.UserService;
 
+/**
+ * Класс для управления авторизацией администраторов.
+ */
 public class AdminAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
     private final UserService userService;
 
+    /**
+     * Конструктор для AdminAuthorizationManager.
+     * @param userService Сервис для работы с пользователями
+     */
     public AdminAuthorizationManager(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Проверяет, имеет ли пользователь роль администратора.
+     * @param authentication Аутентификация пользователя
+     * @param context Контекст авторизации
+     * @return Результат авторизации
+     */
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext context) {
         Authentication auth = authentication.get();

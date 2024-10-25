@@ -13,6 +13,11 @@ public class AppError {
     private String message;
     private Date timestamp;
 
+    /**
+     * Конструктор для создания объекта AppError.
+     * @param status Статус HTTP-ответа
+     * @param message Сообщение об ошибке
+     */
     public AppError(int status, String message){
         this.status = status;
         this.message = message;

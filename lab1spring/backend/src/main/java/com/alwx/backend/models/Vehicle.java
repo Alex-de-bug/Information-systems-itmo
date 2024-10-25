@@ -23,6 +23,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+/**
+ * Модель для тс.
+ */
 @Entity
 @Data
 @Table(name = "vehicle")

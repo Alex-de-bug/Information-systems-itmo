@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.alwx.backend.models.Vehicle;
 
+/**
+ * Репозиторий для работы с автомобилями.
+ */
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long>  {
     Optional<Vehicle> findByName(String name);

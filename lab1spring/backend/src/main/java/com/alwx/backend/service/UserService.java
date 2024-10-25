@@ -106,7 +106,11 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-
+    /**
+     * Отправляет запрос на получение прав администратора.
+     * @param adminRightsRequest Объект с данными запроса
+     * @return ResponseEntity с результатом запроса
+     */
     @Transactional
     public ResponseEntity<?> pushReqForAdminRights(AdminRightsRequest adminRightsRequest){
         String username = adminRightsRequest.getUsername();

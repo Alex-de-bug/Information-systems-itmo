@@ -16,7 +16,9 @@ import com.alwx.backend.service.AuthService;
 @RestController
 public class AuthController {
 
-    
+    /**
+     * Сервис для работы с аутентификацией и регистрацией пользователей.
+     */
     @Autowired
     private AuthService authService;
 

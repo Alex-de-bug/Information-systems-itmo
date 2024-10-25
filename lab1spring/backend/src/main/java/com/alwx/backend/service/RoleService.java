@@ -26,7 +26,11 @@ public class RoleService {
         return roleRepository.findByName("ROLE_USER").get();
     }
 
-
+    /**
+     * Роль со значением ROLE_ADMIN
+     *
+     * @return объект Role, представляющий роль администратора
+     */
     public Role getAdminRole() {
         return roleRepository.findByName("ROLE_ADMIN").get();
     }

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.alwx.backend.models.Coordinates;
 
+/**
+ * Репозиторий для работы с координатами.
+ */
 @Repository
 public interface CoordinatesRepositury extends JpaRepository<Coordinates, Long> {
     Optional<Coordinates> findByXAndY(Long x, Double y);

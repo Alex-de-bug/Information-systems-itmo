@@ -15,6 +15,9 @@ import lombok.Data;
 
 import com.alwx.backend.models.enums.Action;
 
+/**
+ * Модель для записи действий пользователя.
+ */
 @Entity
 @Table(name = "user_actions")
 @Data

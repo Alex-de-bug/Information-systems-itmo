@@ -13,6 +13,9 @@ import com.alwx.backend.utils.UserError;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Сервис для работы с администраторами.
+ */
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -22,6 +25,11 @@ public class AdminService {
     private final RequestForRightsRepository requestForRightsRepository;
 
 
+    /**
+     * Редактирует ответы для администратора.
+     * @param editResponces Объект с данными ответа
+     * @return ResponseEntity с результатом редактирования
+     */
     public ResponseEntity<?> editResponces(EditResponse editResponces){
 
         if(requestForRightsRepository.findByUsername(editResponces.getUsername()).isEmpty()){

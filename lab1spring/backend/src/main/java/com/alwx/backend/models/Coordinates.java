@@ -8,6 +8,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+/**
+ * Модель для координат.
+ */
 @Entity
 @Data
 @Table(name = "coordinates")

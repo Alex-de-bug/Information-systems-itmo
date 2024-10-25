@@ -125,6 +125,11 @@ public class SecurityConfig{
         return authenticationConfiguration.getAuthenticationManager(); 
     }
 
+    /**
+     * Создает менеджер авторизации администраторов.
+     *
+     * @return экземпляр AdminAuthorizationManager
+     */
     @Bean
     public AdminAuthorizationManager adminAuthorizationManager() {
         return new AdminAuthorizationManager(userService);

@@ -28,6 +28,9 @@ import com.alwx.backend.utils.jwt.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Сервис для работы с автомобилями.
+ */
 @Service
 @RequiredArgsConstructor
 public class VehicleService {
@@ -39,10 +42,21 @@ public class VehicleService {
     private final UserActionService userActionService;
     
 
+    /**
+     * Получает все автомобили.
+     * @return Список всех автомобилей
+     */
     public List<? extends Vehicle> getAllVehicle(){
         return vehicleRepository.findAll();
     }
 
+    /**
+     * Обновляет информацию о автомобиле.
+     * @param id ID автомобиля
+     * @param newVehicle Объект с данными для обновления
+     * @param token Токен аутентификации
+     * @return ResponseEntity с результатом обновления
+     */
     public ResponseEntity<?> updateVehicle(Long id, RequestVehicle newVehicle ,String token){
         if(!userRepository.findByUsername(jwtTokenUtil.getUsername(token)).isPresent()){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Ваш токен не действителен"), HttpStatus.BAD_REQUEST);
@@ -111,6 +125,13 @@ public class VehicleService {
         return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "ТС с таким ID не найдено"), HttpStatus.BAD_REQUEST);  
     }
 
+    /**
+     * Удаляет автомобиль.
+     * @param id ID автомобиля
+     * @param token Токен аутентификации
+     * @param reassignId ID автомобиля, на который будет переназначено ТС
+     * @return ResponseEntity с результатом удаления
+     */
     public ResponseEntity<?> deleteVehicle(Long id, String token, String reassignId){
         if(!userRepository.findByUsername(jwtTokenUtil.getUsername(token)).isEmpty()){
             User user = userRepository.findByUsername(jwtTokenUtil.getUsername(token)).get();
@@ -154,6 +175,11 @@ public class VehicleService {
         }
     }
 
+    /**
+     * Создает новый автомобиль.
+     * @param newVehicle Объект с данными для создания
+     * @return ResponseEntity с результатом создания
+     */
     @Transactional
     public ResponseEntity<?> createVehicle(RequestVehicle newVehicle){
         Vehicle vehicle = new Vehicle();

@@ -8,6 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+/**
+ * Модель для запроса прав администратора.
+ */
 @Entity
 @Data
 @Table(name = "request")

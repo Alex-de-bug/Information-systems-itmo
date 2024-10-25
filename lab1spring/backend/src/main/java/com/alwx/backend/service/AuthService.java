@@ -78,6 +78,11 @@ public class AuthService {
         return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername()));
     }
 
+    /**
+     * Обновляет токен аутентификации.
+     * @param oldToken Токен аутентификации
+     * @return ResponseEntity с обновленным токеном
+     */
     public ResponseEntity<?> updateAuthToken(String oldToken) {
         oldToken = oldToken.substring(7);
         UserDetails userDetails = userService.loadUserByUsername(jwtTokenUtils.getUsername(oldToken));
