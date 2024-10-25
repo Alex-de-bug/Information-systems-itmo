@@ -10,10 +10,16 @@ import {
     TableHead, 
     TableRow, 
     Paper,
-    TablePagination
+    TablePagination,
+    TextField, 
+    IconButton, 
+    Box,
+    Typography
   } from '@mui/material';
-  import VehicleTableRow from './VehicleTableRow';
-
+import VehicleTableRow from './VehicleTableRow';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
   
 
 
@@ -35,7 +41,6 @@ const TableComponent = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage] = useState(10);
 
-    // Обработчик сортировки
     const handleSort = (key) => {
         let direction = 'asc';
         if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -44,7 +49,6 @@ const TableComponent = () => {
         setSortConfig({ key, direction });
     };
 
-    // Обработчик поиска
     const handleSearch = (field, value) => {
         setSearchValues(prev => ({
             ...prev,
@@ -52,11 +56,9 @@ const TableComponent = () => {
         }));
     };
 
-    // Применение фильтров и сортировки
     useEffect(() => {
         let result = [...vehicles];
 
-        // Применяем поиск
         result = result.filter(vehicle => {
             return (
                 vehicle.id.toString().toLowerCase().includes(searchValues.id.toLowerCase()) &&
@@ -66,7 +68,6 @@ const TableComponent = () => {
             );
         });
 
-        // Применяем сортировку
         if (sortConfig.key) {
             result.sort((a, b) => {
                 if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -80,7 +81,7 @@ const TableComponent = () => {
         }
 
         setFilteredVehicles(result);
-        setPage(0); // Сброс на первую страницу при фильтрации
+        setPage(0);
     }, [vehicles, searchValues, sortConfig]);
     
 
@@ -146,66 +147,100 @@ const TableComponent = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>
-                                ID
-                                <div>
-                                    <input
-                                        type="text"
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Typography variant="subtitle2">ID</Typography>
+                                        <IconButton size="small" onClick={() => handleSort('id')}>
+                                            {sortConfig.key === 'id' 
+                                                ? (sortConfig.direction === 'asc' 
+                                                    ? <ArrowUpwardIcon fontSize="small" />
+                                                    : <ArrowDownwardIcon fontSize="small" />)
+                                                : <UnfoldMoreIcon fontSize="small" />
+                                            }
+                                        </IconButton>
+                                    </Box>
+                                    <TextField
+                                        size="small"
                                         placeholder="Поиск по ID"
                                         value={searchValues.id}
                                         onChange={(e) => handleSearch('id', e.target.value)}
-                                        style={{ width: '100%' }}
+                                        variant="outlined"
+                                        fullWidth
                                     />
-                                    <button onClick={() => handleSort('id')}>
-                                        {sortConfig.key === 'id' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
-                                    </button>
-                                </div>
+                                </Box>
                             </TableCell>
                             <TableCell>
-                                Name
-                                <div>
-                                    <input
-                                        type="text"
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Typography variant="subtitle2">Name</Typography>
+                                        <IconButton size="small" onClick={() => handleSort('name')}>
+                                            {sortConfig.key === 'name' 
+                                                ? (sortConfig.direction === 'asc' 
+                                                    ? <ArrowUpwardIcon fontSize="small" />
+                                                    : <ArrowDownwardIcon fontSize="small" />)
+                                                : <UnfoldMoreIcon fontSize="small" />
+                                            }
+                                        </IconButton>
+                                    </Box>
+                                    <TextField
+                                        size="small"
                                         placeholder="Поиск по имени"
                                         value={searchValues.name}
                                         onChange={(e) => handleSearch('name', e.target.value)}
-                                        style={{ width: '100%' }}
+                                        variant="outlined"
+                                        fullWidth
                                     />
-                                    <button onClick={() => handleSort('name')}>
-                                        {sortConfig.key === 'name' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
-                                    </button>
-                                </div>
+                                </Box>
                             </TableCell>
                             <TableCell>
-                                Тип тачки
-                                <div>
-                                    <input
-                                        type="text"
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Typography variant="subtitle2">Тип тачки</Typography>
+                                        <IconButton size="small" onClick={() => handleSort('type')}>
+                                            {sortConfig.key === 'type' 
+                                                ? (sortConfig.direction === 'asc' 
+                                                    ? <ArrowUpwardIcon fontSize="small" />
+                                                    : <ArrowDownwardIcon fontSize="small" />)
+                                                : <UnfoldMoreIcon fontSize="small" />
+                                            }
+                                        </IconButton>
+                                    </Box>
+                                    <TextField
+                                        size="small"
                                         placeholder="Поиск по типу"
                                         value={searchValues.type}
                                         onChange={(e) => handleSearch('type', e.target.value)}
-                                        style={{ width: '100%' }}
+                                        variant="outlined"
+                                        fullWidth
                                     />
-                                    <button onClick={() => handleSort('type')}>
-                                        {sortConfig.key === 'type' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
-                                    </button>
-                                </div>
+                                </Box>
                             </TableCell>
                             <TableCell>
-                                Топливо
-                                <div>
-                                    <input
-                                        type="text"
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Typography variant="subtitle2">Топливо</Typography>
+                                        <IconButton size="small" onClick={() => handleSort('fuelType')}>
+                                            {sortConfig.key === 'fuelType' 
+                                                ? (sortConfig.direction === 'asc' 
+                                                    ? <ArrowUpwardIcon fontSize="small" />
+                                                    : <ArrowDownwardIcon fontSize="small" />)
+                                                : <UnfoldMoreIcon fontSize="small" />
+                                            }
+                                        </IconButton>
+                                    </Box>
+                                    <TextField
+                                        size="small"
                                         placeholder="Поиск по топливу"
                                         value={searchValues.fuelType}
                                         onChange={(e) => handleSearch('fuelType', e.target.value)}
-                                        style={{ width: '100%' }}
+                                        variant="outlined"
+                                        fullWidth
                                     />
-                                    <button onClick={() => handleSort('fuelType')}>
-                                        {sortConfig.key === 'fuelType' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
-                                    </button>
-                                </div>
+                                </Box>
                             </TableCell>
-                            <TableCell sx={{width: '15%'}}>Actions</TableCell>
+                            <TableCell sx={{width: '15%'}}>
+                                <Typography variant="subtitle2">Actions</Typography>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
