@@ -25,7 +25,9 @@ import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.dtos.RequestVehicle;
 import com.alwx.backend.dtos.SimpleInfoAboutCars;
 import com.alwx.backend.models.Vehicle;
+import com.alwx.backend.models.enums.Action;
 import com.alwx.backend.service.AuthService;
+import com.alwx.backend.service.UserActionService;
 import com.alwx.backend.service.UserService;
 import com.alwx.backend.service.VehicleService;
 
@@ -48,6 +50,9 @@ public class UserController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private UserActionService userActionService;
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -76,7 +81,7 @@ public class UserController {
 
         ResponseEntity<?> response = vehicleService.updateVehicle(id, newVehicle, token.substring(7));
         if(response.getStatusCode().equals(HttpStatus.OK)){
-            System.out.println("Данные в таблице обновлены");
+            userActionService.logAction(Action.UPDATE_VEHICLE, token.substring(7), id);
             messagingTemplate.convertAndSend("/topic/tableUpdates", 
                 "{\"message\": \"Данные в таблице обновлены\"}");
         }
@@ -87,7 +92,7 @@ public class UserController {
     public ResponseEntity<?> deleteVehicle(@PathVariable("id") Long id, @RequestHeader(name = "Authorization") String token, @RequestHeader(name = "Reassign-Vehicle-Id") String reassignId){
         ResponseEntity<?> response = vehicleService.deleteVehicle(id, token.substring(7), reassignId);
         if(response.getStatusCode().equals(HttpStatus.OK)){
-            System.out.println("Данные в таблице обновлены");
+            userActionService.logAction(Action.DELETE_VEHICLE, token.substring(7), id);
             messagingTemplate.convertAndSend("/topic/tableUpdates", 
                 "{\"message\": \"Данные в таблице обновлены\"}");
         }
@@ -96,7 +101,7 @@ public class UserController {
     }
 
     @PostMapping("/vehicles")
-    public ResponseEntity<?> createVehicle(@Valid @RequestBody RequestVehicle newVehicle, BindingResult bindingResult) {
+    public ResponseEntity<?> createVehicle(@RequestHeader(name = "Authorization") String token, @Valid @RequestBody RequestVehicle newVehicle, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
                 .stream()
@@ -109,7 +114,8 @@ public class UserController {
 
         ResponseEntity<?> response = vehicleService.createVehicle(newVehicle);
         if(response.getStatusCode().equals(HttpStatus.OK)){
-            System.out.println("Данные в таблице обновлены");
+            Map<String, Long> responseBody = (Map<String, Long>) response.getBody();
+            userActionService.logAction(Action.CREATE_VEHICLE, token.substring(7),  responseBody.get("id"));
             messagingTemplate.convertAndSend("/topic/tableUpdates", 
                 "{\"message\": \"Данные в таблице обновлены\"}");
         }

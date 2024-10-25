@@ -2,7 +2,9 @@ package com.alwx.backend.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import com.alwx.backend.dtos.RequestVehicle;
 import com.alwx.backend.models.Coordinates;
 import com.alwx.backend.models.User;
 import com.alwx.backend.models.Vehicle;
+import com.alwx.backend.models.enums.Action;
 import com.alwx.backend.models.enums.FuelType;
 import com.alwx.backend.models.enums.VehicleType;
 import com.alwx.backend.repositories.CoordinatesRepositury;
@@ -33,6 +36,7 @@ public class VehicleService {
     private final UserRepository userRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final RoleService roleService;
+    private final UserActionService userActionService;
     
 
     public List<? extends Vehicle> getAllVehicle(){
@@ -124,8 +128,9 @@ public class VehicleService {
                                 Vehicle reassignVehicle = vehicleRepository.findById(Long.parseLong(reassignId)).get();
                                 reassignVehicle.setCoordinates(vehicle.getCoordinates());
                                 vehicleRepository.save(reassignVehicle);
+                                userActionService.logAction(Action.UPDATE_VEHICLE, token, Long.parseLong(reassignId));
                             }else{
-                                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Вы не можете переназначить этот тс, так как она не принадлежит вам"), HttpStatus.BAD_REQUEST);
+                                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Вы не можете переназначить на этот тс, так как он не принадлежит вам"), HttpStatus.BAD_REQUEST);
                             }
                             
                         }else{
@@ -203,6 +208,9 @@ public class VehicleService {
 
         Hibernate.initialize(vehicle.getUsers());
 
-        return ResponseEntity.ok("Вы успешно добавили машину");
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Вы успешно добавили машину");
+        response.put("id", vehicle.getId());
+        return ResponseEntity.ok(response);
     }
 }
