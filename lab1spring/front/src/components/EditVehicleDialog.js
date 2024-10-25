@@ -58,27 +58,23 @@ const EditVehicleDialog = ({ open, onClose, vehicle }) => {
 
     const handleSubmit = async () => {
         try {
-            const dataToSend = {
-                ...formData,
-                namesUsers: formData.namesUsers.split(',').map(name => name.trim()).filter(name => name !== '')
-            };
-
-            await axios.put(
+            await axios.patch(
                 `http://localhost:8080/user/vehicles/${vehicle.id}`,
-                dataToSend,
+                formData,
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`
                     }
                 }
             );
-
+    
             dispatch(setNotification({
                 color: 'success',
                 message: 'Машина успешно обновлена'
             }));
             onClose();
         } catch (error) {
+            console.log(error);
             dispatch(setNotification({
                 color: 'error',
                 message: error.response?.data?.message || 'Произошла ошибка при обновлении'

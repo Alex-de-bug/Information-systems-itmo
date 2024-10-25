@@ -63,25 +63,25 @@ public class UserController {
         return request;
     }
 
-    // @PatchMapping("/vehicles/{id}")
-    // public ResponseEntity<?> updateVehicle(@PathVariable("id") Long id, @Valid @RequestBody NewVehicle newVehicle, BindingResult bindingResult){
+    @PatchMapping("/vehicles/{id}")
+    public ResponseEntity<?> updateVehicle(@RequestHeader(name = "Authorization") String token, @PathVariable("id") Long id, @Valid @RequestBody RequestVehicle newVehicle, BindingResult bindingResult){
 
-    //     if (bindingResult.hasErrors()) {
-    //         List<String> errors = bindingResult.getAllErrors()
-    //             .stream()
-    //             .map(DefaultMessageSourceResolvable::getDefaultMessage)
-    //             .collect(Collectors.toList());
-    //         return ResponseEntity.badRequest().body(new AppError(HttpStatus.BAD_REQUEST.value(), errors.toString()));
-    //     }
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(new AppError(HttpStatus.BAD_REQUEST.value(), errors.toString()));
+        }
 
-    //     ResponseEntity<?> response = vehicleService.updateVehicle(id, newVehicle);
-    //     if(response.getStatusCode().equals(HttpStatus.OK)){
-    //         System.out.println("Данные в таблице обновлены");
-    //         messagingTemplate.convertAndSend("/topic/tableUpdates", 
-    //             "{\"message\": \"Данные в таблице обновлены\"}");
-    //     }
-    //     return response;
-    // }
+        ResponseEntity<?> response = vehicleService.updateVehicle(id, newVehicle, token.substring(7));
+        if(response.getStatusCode().equals(HttpStatus.OK)){
+            System.out.println("Данные в таблице обновлены");
+            messagingTemplate.convertAndSend("/topic/tableUpdates", 
+                "{\"message\": \"Данные в таблице обновлены\"}");
+        }
+        return response;
+    }
 
     @DeleteMapping("/vehicles/{id}")
     public ResponseEntity<?> deleteVehicle(@PathVariable("id") Long id, @RequestHeader(name = "Authorization") String token, @RequestHeader(name = "Reassign-Vehicle-Id") String reassignId){

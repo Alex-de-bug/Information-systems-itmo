@@ -39,6 +39,74 @@ public class VehicleService {
         return vehicleRepository.findAll();
     }
 
+    public ResponseEntity<?> updateVehicle(Long id, RequestVehicle newVehicle ,String token){
+        if(!userRepository.findByUsername(jwtTokenUtil.getUsername(token)).isPresent()){
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Ваш токен не действителен"), HttpStatus.BAD_REQUEST);
+        }
+        
+        if(vehicleRepository.findById(id).isPresent()){
+            if((userRepository.findByUsername(jwtTokenUtil.getUsername(token)).get().getRoles().contains(roleService.getAdminRole()) && vehicleRepository.findById(id).get().getPermissionToEdit())
+            || vehicleRepository.findById(id).get().getUsers().stream().map(u -> u.getUsername()).anyMatch(username -> username.equals(jwtTokenUtil.getUsername(token)))){
+                Vehicle vehicle = vehicleRepository.findById(id).get();
+
+                vehicle.setName(newVehicle.getName());
+
+                if(coordinatesRepositury.findByXAndY(newVehicle.getX(), newVehicle.getY()).isPresent()){
+                    vehicle.setCoordinates(coordinatesRepositury.findByXAndY(newVehicle.getX(), newVehicle.getY()).get());
+                }else{
+                    Coordinates coordinates = new Coordinates();
+                    coordinates.setX(newVehicle.getX());
+                    coordinates.setY(newVehicle.getY());
+                    vehicle.setCoordinates(coordinates);
+                }
+
+                LocalDateTime localDateTime = LocalDateTime.now();
+                vehicle.setCreationDate(localDateTime);
+
+                VehicleType vehicleType = VehicleType.fromString(newVehicle.getType());
+                vehicle.setType(vehicleType);
+
+                vehicle.setEnginePower(newVehicle.getEnginePower());
+
+                vehicle.setNumberOfWheels(newVehicle.getNumberOfWheels());
+
+                vehicle.setCapacity(newVehicle.getCapacity());
+
+                vehicle.setDistanceTravelled(newVehicle.getDistanceTravelled());
+
+                vehicle.setFuelConsumption(newVehicle.getFuelConsumption());
+
+                FuelType fuelType = FuelType.fromString(newVehicle.getFuelType());
+                vehicle.setFuelType(fuelType);
+
+
+                List<String> owners = newVehicle.getNamesOfOwners();
+                List<User> convertOwners = new ArrayList<>();
+                for(String owner : owners){
+                    if(userRepository.findByUsername(owner).isPresent()){
+                        convertOwners.add(userRepository.findByUsername(owner).get());
+                    }
+                }
+                vehicle.setUsers(convertOwners);
+
+                if(convertOwners.isEmpty()){
+                    vehicle.setPermissionToEdit(true);
+                }else{
+                    vehicle.setPermissionToEdit(newVehicle.getPermissionToEdit());
+                }
+                
+                vehicleRepository.save(vehicle);
+
+                Hibernate.initialize(vehicle.getUsers());
+
+                return ResponseEntity.ok("Вы успешно добавили машину");
+            }else{
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Вы не можете обновить этот ТС, так как он не принадлежит вам"), HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "ТС с таким ID не найдено"), HttpStatus.BAD_REQUEST);  
+    }
+
     public ResponseEntity<?> deleteVehicle(Long id, String token, String reassignId){
         if(!userRepository.findByUsername(jwtTokenUtil.getUsername(token)).isEmpty()){
             User user = userRepository.findByUsername(jwtTokenUtil.getUsername(token)).get();
