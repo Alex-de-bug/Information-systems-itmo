@@ -17,15 +17,17 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 /**
- * Глобальный обработчик исключений для приложения.
- * Обеспечивает централизованную обработку исключений для всех методов с аннотацией @RequestMapping.
+ * Глобальный обработчик исключений для приложения. Обеспечивает
+ * централизованную обработку исключений для всех методов с аннотацией
+ * @RequestMapping.
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
-     * Обрабатывает исключения, возникающие при невозможности чтения тела запроса
-     * или при неверном формате данных.
+     * Обрабатывает исключения, возникающие при невозможности чтения тела
+     * запроса или при неверном формате данных.
+     *
      * @param ex Исключение HttpMessageNotReadableException
      * @return ResponseEntity с деталями ошибки
      */
@@ -33,27 +35,29 @@ public class GlobalExceptionHandler {
     public ResponseEntity<AppError> handleFormatException(HttpMessageNotReadableException ex) {
         String fieldName = "";
         String message = "Неверный формат данных";
-        
+
         if (ex.getCause() instanceof InvalidFormatException) {
             InvalidFormatException cause = (InvalidFormatException) ex.getCause();
             fieldName = cause.getPath().isEmpty() ? "" : cause.getPath().get(0).getFieldName();
             Class<?> targetType = cause.getTargetType();
-            
             message = String.format("Неверный формат поля '%s'. Значение должно быть типа '%s'", 
                 fieldName,
                 targetType.getSimpleName());
-        } else if (ex.getCause() instanceof JsonMappingException) {
+    }
+
+    else if (ex.getCause () 
+        instanceof JsonMappingException) {
             JsonMappingException cause = (JsonMappingException) ex.getCause();
-            fieldName = cause.getPath().isEmpty() ? "" : cause.getPath().get(0).getFieldName();
-            
-            message = String.format("Ошибка в поле '%s': %s", 
-                fieldName, 
+        fieldName = cause.getPath().isEmpty() ? "" : cause.getPath().get(0).getFieldName();
+
+        message = String.format("Ошибка в поле '%s': %s",
+                fieldName,
                 cause.getOriginalMessage());
-        }
-        
-        return ResponseEntity
-            .badRequest()
-            .body(new AppError(
+    }
+
+    return ResponseEntity.badRequest ()
+
+.body(new AppError(
                 HttpStatus.BAD_REQUEST.value(),
                 message
             ));
@@ -66,7 +70,7 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity с деталями ошибки
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<AppError> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+public ResponseEntity<AppError> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         String message = "Ошибка при сохранении данных: превышена максимальная длина поля";
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
@@ -79,7 +83,7 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity с деталями ошибки
      */ 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<AppError> handleValidationExceptions(MethodArgumentNotValidException ex) {
+public ResponseEntity<AppError> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> errors = ex.getBindingResult()
             .getAllErrors()
             .stream()

@@ -82,10 +82,10 @@ const VehicleMap = ({ vehicles }) => {
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <Box>
-                        <div style={{ color: '#ddd', marginBottom: '8px' }}>X axis:</div>
+                        <div style={{ color: '#ddd', marginBottom: '8px' }}>X ось:</div>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                             <TextField
-                                label="Max X"
+                                label="Максимальное X"
                                 type="number"
                                 size="small"
                                 value={bounds.maxX}
@@ -101,7 +101,7 @@ const VehicleMap = ({ vehicles }) => {
                                 }}
                             />
                             <TextField
-                                label="Min X"
+                                label="Минимальное X"
                                 type="number"
                                 size="small"
                                 value={bounds.minX}
@@ -120,10 +120,10 @@ const VehicleMap = ({ vehicles }) => {
                     </Box>
 
                     <Box>
-                        <div style={{ color: '#ddd', marginBottom: '8px' }}>Y axis:</div>
+                        <div style={{ color: '#ddd', marginBottom: '8px' }}>Y ось:</div>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                             <TextField
-                                label="Max Y"
+                                label="Максимальное Y"
                                 type="number"
                                 size="small"
                                 value={bounds.maxY}
@@ -139,7 +139,7 @@ const VehicleMap = ({ vehicles }) => {
                                 }}
                             />
                             <TextField
-                                label="Min Y"
+                                label="Минимальное Y"
                                 type="number"
                                 size="small"
                                 value={bounds.minY}
@@ -163,7 +163,7 @@ const VehicleMap = ({ vehicles }) => {
                         <Button onClick={() => handleZoom(false)}><RemoveIcon /></Button>
                     </ButtonGroup>
                     <Box sx={{ mt: 2, color: '#ddd' }}>
-                        <div>Scale: {scale.toFixed(2)}x</div>
+                        <div>Скалирование: {scale.toFixed(2)}x</div>
                     </Box>
                 </Box>
             </Box>
@@ -206,7 +206,7 @@ const VehicleMap = ({ vehicles }) => {
                                     borderRadius: '50%'
                                 }} 
                             />
-                            <span>{fuelType}</span>
+                            <span>{fuelType === 'MANPOWER' ? 'Человек' : fuelType === 'DIESEL' ? 'Дизель' : fuelType === 'KEROSENE' ? 'Керосин' : fuelType === 'ELECTRICITY' ? 'Электричество' : fuelType === 'PLASMA' ? 'Плазма' : 'Неизвестно'}</span>
                         </Box>
                     ))}
                 </Box>

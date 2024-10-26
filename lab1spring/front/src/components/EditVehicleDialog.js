@@ -165,9 +165,9 @@ const EditVehicleDialog = ({ open, onClose, vehicle }) => {
                         onChange={handleChange}
                         label="Тип транспорта"
                     >
-                        <MenuItem value="PLANE">PLANE</MenuItem>
-                        <MenuItem value="BOAT">BOAT</MenuItem>
-                        <MenuItem value="BICYCLE">BICYCLE</MenuItem>
+                        <MenuItem value="PLANE">Самолёт</MenuItem>
+                        <MenuItem value="BOAT">Лодка</MenuItem>
+                        <MenuItem value="BICYCLE">Велосипед</MenuItem>
                     </Select>
                 </FormControl>
                 <FormControl fullWidth margin="dense">
@@ -178,11 +178,11 @@ const EditVehicleDialog = ({ open, onClose, vehicle }) => {
                         onChange={handleChange}
                         label="Тип топлива"
                     >
-                        <MenuItem value="KEROSENE">KEROSENE</MenuItem>
-                        <MenuItem value="ELECTRICITY">ELECTRICITY</MenuItem>
-                        <MenuItem value="DIESEL">DIESEL</MenuItem>
-                        <MenuItem value="MANPOWER">MANPOWER</MenuItem>
-                        <MenuItem value="PLASMA">PLASMA</MenuItem>
+                        <MenuItem value="KEROSENE">Керосин</MenuItem>
+                        <MenuItem value="ELECTRICITY">Электричество</MenuItem>
+                        <MenuItem value="DIESEL">Дизель</MenuItem>
+                        <MenuItem value="MANPOWER">Человек</MenuItem>
+                        <MenuItem value="PLASMA">Плазма</MenuItem>
                     </Select>
                 </FormControl>
                 <TextField

@@ -30,8 +30,8 @@ const VehicleTableRow = ({ vehicle, currentUser, userRoles, vehicles }) => {
         <TableRow hover>
             <TableCell>{vehicle.id}</TableCell>
             <TableCell>{vehicle.name}</TableCell>
-            <TableCell>{vehicle.type}</TableCell>
-            <TableCell>{vehicle.fuelType}</TableCell>
+            <TableCell>{vehicle.type === 'PLANE' ? 'Самолёт' : vehicle.type === 'BOAT' ? 'Лодка' : vehicle.type === 'BICYCLE' ? 'Велосипед' : 'Неизвестно'}</TableCell>
+            <TableCell>{vehicle.fuelType === 'MANPOWER' ? 'Человек' : vehicle.fuelType === 'DIESEL' ? 'Дизель' : vehicle.fuelType === 'KEROSENE' ? 'Керосин' : vehicle.fuelType === 'ELECTRICITY' ? 'Электричество' : vehicle.fuelType === 'PLASMA' ? 'Плазма' : 'Неизвестно'}</TableCell>
             <TableCell>
             <Box>
                 <IconButton 
@@ -68,17 +68,17 @@ const VehicleTableRow = ({ vehicle, currentUser, userRoles, vehicles }) => {
             <DialogContent>
             <DialogContentText>
                 <strong>ID:</strong> {vehicle.id}<br />
-                <strong>Name:</strong> {vehicle.name}<br />
-                <strong>Coordinates:</strong> X: {vehicle.x}, Y: {vehicle.y}<br />
-                <strong>Type:</strong> {vehicle.type}<br />
-                <strong>Engine Power:</strong> {vehicle.enginePower}<br />
-                <strong>Number of Wheels:</strong> {vehicle.numberOfWheels}<br />
-                <strong>Capacity:</strong> {vehicle.capacity}<br />
-                <strong>Distance Travelled:</strong> {vehicle.distanceTravelled}<br />
-                <strong>Fuel Consumption:</strong> {vehicle.fuelConsumption}<br />
-                <strong>Fuel Type:</strong> {vehicle.fuelType}<br />
-                <strong>Users:</strong> {vehicle.namesUsers.join(', ')}<br />
-                <strong>Permission to Edit:</strong> {vehicle.permissionToEdit ? 'Yes' : 'No'}
+                <strong>Название:</strong> {vehicle.name}<br />
+                <strong>Координаты:</strong> X: {vehicle.x}, Y: {vehicle.y}<br />
+                <strong>Тип:</strong> {vehicle.type === 'PLANE' ? 'Самолёт' : vehicle.type === 'BOAT' ? 'Лодка' : vehicle.type === 'BICYCLE' ? 'Велосипед' : 'Неизвестно'}<br />
+                <strong>Мощность двигателя:</strong> {vehicle.enginePower}<br />
+                <strong>Количество колёс:</strong> {vehicle.numberOfWheels}<br />
+                <strong>Вместимость:</strong> {vehicle.capacity}<br />
+                <strong>Пройденный путь:</strong> {vehicle.distanceTravelled}<br />
+                <strong>Расход топлива:</strong> {vehicle.fuelConsumption}<br />
+                <strong>Тип топлива:</strong> {vehicle.fuelType === 'MANPOWER' ? 'Человек' : vehicle.fuelType === 'DIESEL' ? 'Дизель' : vehicle.fuelType === 'KEROSENE' ? 'Керосин' : vehicle.fuelType === 'ELECTRICITY' ? 'Электричество' : vehicle.fuelType === 'PLASMA' ? 'Плазма' : 'Неизвестно'}<br />
+                <strong>Пользователи:</strong> {vehicle.namesUsers.join(', ')}<br />
+                <strong>Разрешение на редактирование:</strong> {vehicle.permissionToEdit ? 'Да' : 'Нет'}
             </DialogContentText>
             </DialogContent>
         </Dialog>

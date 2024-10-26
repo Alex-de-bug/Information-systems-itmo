@@ -118,7 +118,7 @@ const TableComponent = ({ vehicles }) => {
                             <TableCell>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <Typography variant="subtitle2">Name</Typography>
+                                        <Typography variant="subtitle2">Имя</Typography>
                                         <IconButton size="small" onClick={() => handleSort('name')}>
                                             {sortConfig.key === 'name' 
                                                 ? (sortConfig.direction === 'asc' 
@@ -185,7 +185,7 @@ const TableComponent = ({ vehicles }) => {
                                 </Box>
                             </TableCell>
                             <TableCell sx={{width: '15%'}}>
-                                <Typography variant="subtitle2">Actions</Typography>
+                                <Typography variant="subtitle2">Действия</Typography>
                             </TableCell>
                         </TableRow>
                     </TableHead>

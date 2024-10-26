@@ -67,7 +67,7 @@ const DeleteByFuelTypeButton = ({ vehicles, currentUser, userRoles }) => {
                 >
                     {availableFuelTypes.map(fuelType => (
                         <MenuItem key={fuelType} value={fuelType}>
-                            {fuelType}
+                            {fuelType === 'MANPOWER' ? 'Человек' : fuelType === 'DIESEL' ? 'Дизель' : fuelType === 'KEROSENE' ? 'Керосин' : fuelType === 'ELECTRICITY' ? 'Электричество' : fuelType === 'PLASMA' ? 'Плазма' : 'Неизвестно'}
                         </MenuItem>
                     ))}
                 </Select>

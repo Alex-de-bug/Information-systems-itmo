@@ -45,11 +45,25 @@ const NewVehicleForm = () => {
     });
     };
 
+    const replaceDotsWithCommas = (value) => {
+      return typeof value === 'string' ? value.replace(/\./g, ',') : value;
+    };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const modifiedFormData = {
+      ...formData,
+      x: replaceDotsWithCommas(formData.x),
+      y: replaceDotsWithCommas(formData.y),
+      enginePower: replaceDotsWithCommas(formData.enginePower),
+      numberOfWheels: replaceDotsWithCommas(formData.numberOfWheels),
+      capacity: replaceDotsWithCommas(formData.capacity),
+      distanceTravelled: replaceDotsWithCommas(formData.distanceTravelled),
+      fuelConsumption: replaceDotsWithCommas(formData.fuelConsumption)
+    };
+    console.log(modifiedFormData);
     try {
-      const response = await axios.post('http://localhost:8080/user/vehicles', formData, {
+      const response = await axios.post('http://localhost:8080/user/vehicles', modifiedFormData, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`, 
             },

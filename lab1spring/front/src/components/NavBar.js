@@ -61,11 +61,11 @@ const NavBar = () => {
           ) : (
             <>
               <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
-                LOGIN: {localStorage.getItem('name')} ROLE:{' '}
+                Ваше прозвище: {localStorage.getItem('name')} ; Ваши права в Скуфистане:{' '}
                 {localStorage.getItem('roles') &&
                 localStorage.getItem('roles').includes('ROLE_ADMIN')
-                  ? 'ADMIN'
-                  : 'USER'}
+                  ? 'Вы Гой'
+                  : 'Вы не Гой'}
               </Typography>
               {
                 onAdminPage ? (
