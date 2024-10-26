@@ -22,3 +22,6 @@ spring:
 logging:
   level:
     org.springframework.security.config.annotation.authentication.configuration: ERROR
+
+frontend:
+  url: http://localhost:3000

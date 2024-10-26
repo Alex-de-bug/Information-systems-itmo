@@ -1,5 +1,6 @@
 package com.alwx.backend.configs;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -32,6 +33,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserService userService;
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
@@ -40,7 +44,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:3000").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOrigins(frontendUrl).withSockJS();
         registry.addEndpoint("/ws");
     }
 
