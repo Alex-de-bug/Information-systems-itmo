@@ -17,7 +17,7 @@ import com.alwx.backend.service.UserService;
  * Контроллер для работы с административными задачами.
  */
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @CrossOrigin("*")
 public class AdminController {
 

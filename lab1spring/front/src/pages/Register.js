@@ -25,7 +25,7 @@ const Register = () => {
     };
     
     try {
-      const response = await axios.post('http://localhost:8080/reg', userData);
+      const response = await axios.post('http://localhost:8081/api/reg', userData);
       console.log('Успешный ответ:', response.data);
       navigate('/login');
 

@@ -21,7 +21,7 @@ const Home = () => {
 
     const fetchVehicles = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/user/vehicles', {
+            const response = await axios.get('http://localhost:8081/api/user/vehicles', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
@@ -35,7 +35,7 @@ const Home = () => {
     fetchVehicles();
 
     const connectWebSocket = () => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = new SockJS('http://localhost:8081/api/ws');
         const stompClient = new Client({
             webSocketFactory: () => socket,
             connectHeaders: {

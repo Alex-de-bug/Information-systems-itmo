@@ -59,7 +59,7 @@ const EditVehicleDialog = ({ open, onClose, vehicle }) => {
     const handleSubmit = async () => {
         try {
             await axios.patch(
-                `http://localhost:8080/user/vehicles/${vehicle.id}`,
+                `http://localhost:8081/api/user/vehicles/${vehicle.id}`,
                 formData,
                 {
                     headers: {

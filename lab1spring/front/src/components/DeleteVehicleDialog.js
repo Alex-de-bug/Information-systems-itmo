@@ -17,7 +17,7 @@ const DeleteVehicleDialog = ({
 
     const handleDeleteRequest = async () => {
         try {        
-            await axios.delete(`http://localhost:8080/user/vehicles/${vehicle.id}`, {
+            await axios.delete(`http://localhost:8081/api/user/vehicles/${vehicle.id}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                     'Reassign-Vehicle-Id': selectedVehicleId

@@ -24,7 +24,7 @@ const AdminPanel = () => {
 
   const refreshToken = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:8080/user/token', {
+      const response = await axios.get('http://localhost:8081/api/user/token', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -53,7 +53,7 @@ const AdminPanel = () => {
     const fetchRequests = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('http://localhost:8080/admin/requests', {
+        const response = await axios.get('http://localhost:8081/api/admin/requests', {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
             }
@@ -78,7 +78,7 @@ const AdminPanel = () => {
 
   const handleRequest = async (username, rulling) => {
     try {
-        const response = await axios.post('http://localhost:8080/admin/requests', {username: username, rulling: rulling}, {
+        const response = await axios.post('http://localhost:8081/api/admin/requests', {username: username, rulling: rulling}, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
             }

@@ -18,7 +18,7 @@ const Admin = () => {
     setLoading(true);
     try {
 
-      const response = await axios.post('http://localhost:8080/user/rights', {username: localStorage.getItem('name')}, {
+      const response = await axios.post('http://localhost:8081/api/user/rights', {username: localStorage.getItem('name')}, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`, 
         },
@@ -30,7 +30,7 @@ const Admin = () => {
         }));
       }else if(response.status === 202){
         try {
-            const response = await axios.get('http://localhost:8080/user/token', {
+            const response = await axios.get('http://localhost:8081/api/user/token', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`, 
                 },

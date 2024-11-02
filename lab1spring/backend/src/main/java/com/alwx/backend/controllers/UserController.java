@@ -41,7 +41,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin("*")
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     /**
