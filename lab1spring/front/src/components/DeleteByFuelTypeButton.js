@@ -35,7 +35,7 @@ const DeleteByFuelTypeButton = ({ vehicles, currentUser, userRoles }) => {
 
         try {
             for (const vehicle of vehiclesToDelete) {
-                await axios.delete(`http://localhost:8081/api/user/vehicles/${vehicle.id}`, {
+                await axios.delete(`http://195.58.48.101/api/user/vehicles/${vehicle.id}`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                         'Reassign-Vehicle-Id': ''

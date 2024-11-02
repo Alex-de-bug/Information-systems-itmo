@@ -59,7 +59,7 @@ const NewVehicleForm = () => {
       fuelConsumption: formData.fuelConsumption
     };
     try {
-      const response = await axios.post('http://localhost:8081/api/user/vehicles', modifiedFormData, {
+      const response = await axios.post('http://195.58.48.101/api/user/vehicles', modifiedFormData, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`, 
             },

@@ -28,7 +28,7 @@ const Login = () => {
     };
       
     try {
-        const response = await axios.post('http://localhost:8081/api/auth', userData);
+        const response = await axios.post('http://195.58.48.101/api/auth', userData);
         console.log('Успешный ответ:', response.data);
         
         localStorage.setItem('token', response.data.token);
