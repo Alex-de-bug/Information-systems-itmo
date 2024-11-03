@@ -24,10 +24,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtTokenUtil {
 
-    @Value("${jwt.secret}")
+    @Value("${SECRET}")
     private String secret;
 
-    @Value("${jwt.lifetime}")
+    @Value("${LIFETIME}")
     private Duration jwtLifetime;
 
     /**
