@@ -2,15 +2,20 @@ version: '3.8'
 
 services:
   nginx:
-    image: nginx:alpine
+    build: 
+      context: ./front
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./front/build:/usr/share/nginx/html
     depends_on:
       - backend
-      - frontend
+    healthcheck:
+      test: ["CMD", "ls", "/usr/share/nginx/html/index.html"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   backend:
     build: 
@@ -27,16 +32,8 @@ services:
       - POSTGRES_DB_PORT=${POSTGRES_DB_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
-
     depends_on:
       - db
-
-  frontend:
-    build:
-      context: ./front
-      dockerfile: Dockerfile
-    volumes:
-      - frontend_build:/app/build
 
   db:
     image: postgres:15-alpine
@@ -53,4 +50,3 @@ services:
 
 volumes:
   postgres_data:
-  frontend_build:

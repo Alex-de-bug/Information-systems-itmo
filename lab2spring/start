@@ -1,8 +1,8 @@
 for server:
 
-/~.**rc:
-export SECRET=
-export LIFETIME=
+.env (exampl)
+docker-compose down docker-compose up --build
+
 
 for local:
 
