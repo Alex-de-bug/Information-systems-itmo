@@ -29,9 +29,6 @@ const AdminPanel = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('roles', JSON.stringify(response.data.roles));
-      localStorage.setItem('name', response.data.name);
 
       dispatch(loginSuccess({
         user: response.data.name,

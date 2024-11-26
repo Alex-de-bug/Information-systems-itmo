@@ -68,7 +68,7 @@ const DeleteVehicleDialog = ({
                 </FormControl>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleSkipReassign} color="primary" disabled={selectedVehicleId}>
+                <Button onClick={handleSkipReassign} color="primary" disabled={selectedVehicleId !== ""}>
                     Пропустить
                 </Button>
                 <Button 

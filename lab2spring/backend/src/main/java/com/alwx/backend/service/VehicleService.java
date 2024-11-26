@@ -23,6 +23,7 @@ import com.alwx.backend.models.enums.VehicleType;
 import com.alwx.backend.repositories.CoordinatesRepositury;
 import com.alwx.backend.repositories.UserRepository;
 import com.alwx.backend.repositories.VehicleRepository;
+import com.alwx.backend.utils.UserError;
 import com.alwx.backend.utils.jwt.JwtTokenUtil;
 
 import jakarta.transaction.Transactional;
@@ -65,6 +66,28 @@ public class VehicleService {
         if(vehicleRepository.findById(id).isPresent()){
             if((userRepository.findByUsername(jwtTokenUtil.getUsername(token)).get().getRoles().contains(roleService.getAdminRole()) && vehicleRepository.findById(id).get().getPermissionToEdit())
             || vehicleRepository.findById(id).get().getUsers().stream().map(u -> u.getUsername()).anyMatch(username -> username.equals(jwtTokenUtil.getUsername(token)))){
+
+                if(newVehicle.getFuelConsumption() < (5.0+newVehicle.getEnginePower()*0.03)){
+                    return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ENGINE_FUEL.getMessage()+(5.0+newVehicle.getEnginePower()*0.03)), HttpStatus.BAD_REQUEST);
+                }
+                switch (newVehicle.getType()) {
+                    case "PLANE":{
+                        if(newVehicle.getEnginePower() < 100) return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ENGINE_PLANE.getMessage()), HttpStatus.BAD_REQUEST);
+                        break;
+                    }
+                    case "BOAT":{
+                        if(newVehicle.getEnginePower() < 2.5) return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ENGINE_BOAT.getMessage()), HttpStatus.BAD_REQUEST);
+                        break;
+                    }
+                    case "BICYCLE":{
+                        if(newVehicle.getEnginePower() < 350) return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ENGINE_BICYCLE.getMessage()), HttpStatus.BAD_REQUEST);
+                        break;
+                    }
+        
+                    default:
+                        break;
+                }
+
                 Vehicle vehicle = vehicleRepository.findById(id).get();
 
                 vehicle.setName(newVehicle.getName());
@@ -182,6 +205,26 @@ public class VehicleService {
      */
     @Transactional
     public ResponseEntity<?> createVehicle(RequestVehicle newVehicle){
+        if(newVehicle.getFuelConsumption() < (5.0+newVehicle.getEnginePower()*0.03)){
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ENGINE_FUEL.getMessage()+(5.0+newVehicle.getEnginePower()*0.03)), HttpStatus.BAD_REQUEST);
+        }
+        switch (newVehicle.getType()) {
+            case "PLANE":{
+                if(newVehicle.getEnginePower() < 100) return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ENGINE_PLANE.getMessage()), HttpStatus.BAD_REQUEST);
+                break;
+            }
+            case "BOAT":{
+                if(newVehicle.getEnginePower() < 2.5) return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ENGINE_BOAT.getMessage()), HttpStatus.BAD_REQUEST);
+                break;
+            }
+            case "BICYCLE":{
+                if(newVehicle.getEnginePower() < 350) return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ENGINE_BICYCLE.getMessage()), HttpStatus.BAD_REQUEST);
+                break;
+            }
+
+            default:
+                break;
+        }
         Vehicle vehicle = new Vehicle();
 
         vehicle.setName(newVehicle.getName());

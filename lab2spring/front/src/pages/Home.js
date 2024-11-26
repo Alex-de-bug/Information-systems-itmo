@@ -35,7 +35,7 @@ const Home = () => {
     fetchVehicles();
 
     const connectWebSocket = () => {
-        const socket = new SockJS(`http://${process.env.REACT_APP_SERVER}/api/ws`);
+        const socket = new SockJS(`http://${process.env.REACT_APP_SERVER}/ws`);
         const stompClient = new Client({
             webSocketFactory: () => socket,
             connectHeaders: {

@@ -30,10 +30,6 @@ const Login = () => {
     try {
         const response = await axios.post(`http://${process.env.REACT_APP_SERVER}/api/auth`, userData);
         console.log('Успешный ответ:', response.data);
-        
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('roles', JSON.stringify(response.data.roles));
-        localStorage.setItem('name', response.data.name);
 
         dispatch(loginSuccess({
           user: response.data.name, 

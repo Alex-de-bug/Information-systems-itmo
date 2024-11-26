@@ -38,7 +38,7 @@ public class Vehicle {
 
     @NotNull
     @NotEmpty
-    @Column(length = 255)
+    @Column(length = 255, unique = true)
     private String name;
 
     @NotNull

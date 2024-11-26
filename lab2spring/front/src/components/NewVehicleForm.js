@@ -110,7 +110,7 @@ const NewVehicleForm = () => {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            helperText="type: string"
+            helperText="тип: string"
             fullWidth
           />
           <TextField
@@ -120,7 +120,7 @@ const NewVehicleForm = () => {
             value={formData.x}
             onChange={handleChange}
             fullWidth
-            helperText="type: long"
+            helperText="тип: long"
           />
           <TextField
             label="Y Координата"
@@ -129,7 +129,7 @@ const NewVehicleForm = () => {
             value={formData.y}
             onChange={handleChange}
             fullWidth
-            helperText="type: double"
+            helperText="тип: double"
           />
           <FormControl sx={{ m: 1 }}>
             <InputLabel>Тип ТС</InputLabel>
@@ -151,7 +151,7 @@ const NewVehicleForm = () => {
             value={formData.enginePower}
             onChange={handleChange}
             fullWidth
-            helperText="type: double"
+            helperText="тип: double"
           />
           <TextField
             label="Количество колёс"
@@ -160,7 +160,7 @@ const NewVehicleForm = () => {
             value={formData.numberOfWheels}
             onChange={handleChange}
             fullWidth
-            helperText="type: long"
+            helperText="тип: long"
           />
           <TextField
             label="Вместимость"
@@ -169,7 +169,7 @@ const NewVehicleForm = () => {
             value={formData.capacity}
             onChange={handleChange}
             fullWidth
-            helperText="type: long"
+            helperText="тип: long"
           />
           <TextField
             label="Пройденный путь"
@@ -178,7 +178,7 @@ const NewVehicleForm = () => {
             value={formData.distanceTravelled}
             onChange={handleChange}
             fullWidth
-            helperText="type: double"
+            helperText="тип: double"
           />
           <TextField
             label="Расход топлива"
@@ -187,7 +187,7 @@ const NewVehicleForm = () => {
             value={formData.fuelConsumption}
             onChange={handleChange}
             fullWidth
-            helperText="type: float"
+            helperText="тип: float"
           />
           <FormControl sx={{ m: 1 }}>
             <InputLabel>Тип топлива</InputLabel>

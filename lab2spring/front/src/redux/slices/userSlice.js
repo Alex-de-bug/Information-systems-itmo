@@ -13,11 +13,17 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         loginSuccess: (state, action) => {
+            localStorage.setItem('token', action.payload.token);
+            localStorage.setItem('roles', JSON.stringify(action.payload.roles));
+            localStorage.setItem('name', action.payload.user);
             state.user = action.payload.user;
             state.roles = action.payload.roles;
             state.token = action.payload.token;
         },
         logout: (state) => {
+            localStorage.removeItem('name');
+            localStorage.removeItem('token');
+            localStorage.removeItem('roles');
             state.user = null;
             state.roles = [];
             state.token = null;

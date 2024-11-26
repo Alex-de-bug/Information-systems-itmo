@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import AdminPanel from '../components/AdminPanel';
 import { loginSuccess, setNotification } from '../redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
-import { Box, Button, Typography } from '@mui/material';
+import { Paper, Box, Button, Typography } from '@mui/material';
 
 
 
@@ -35,9 +35,6 @@ const Admin = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`, 
                 },
               });
-              localStorage.setItem('token', response.data.token);
-              localStorage.setItem('roles', JSON.stringify(response.data.roles));
-              localStorage.setItem('name', response.data.name);
       
               dispatch(loginSuccess({
                 user: response.data.name, 
@@ -76,7 +73,7 @@ const Admin = () => {
       {admin ? (
     <AdminPanel />
   ) : (
-    <Box>
+    <Paper sx={{m: 2, p: 4, borderRadius: 2, backgroundColor: 'rgba(0, 0, 0, 0.87)', }}>
       <Typography variant="h6" gutterBottom>
         У вас нет прав администратора.
       </Typography>
@@ -87,7 +84,7 @@ const Admin = () => {
       >
         {loading ? 'Отправка запроса...' : 'Запросить права администратора'}
       </Button>
-    </Box>
+    </Paper>
   )}
     </Box>
 

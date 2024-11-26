@@ -19,6 +19,8 @@ import com.alwx.backend.dtos.AppError;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
+import jakarta.validation.ConstraintViolationException;
+
 /**
  * Глобальный обработчик исключений для приложения. Обеспечивает
  * централизованную обработку исключений для всех методов с аннотацией
@@ -87,16 +89,18 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<AppError> handleDataIntegrityViolation(DataIntegrityViolationException ex, Locale locale) {
+        System.out.println(ex);
         String message = messageSource.getMessage(
             "dataIntegrity.error",
             null,
-            "Ошибка при сохранении данных: превышена максимальная длина поля",
+            "Поле \"Название\" должно быть уникальным",
             locale
-        );
+            );
         
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(new AppError(HttpStatus.BAD_REQUEST.value(), message));
+        
     }
 
     /**

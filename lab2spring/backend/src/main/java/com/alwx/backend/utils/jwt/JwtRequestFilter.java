@@ -13,7 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.utils.UserError;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -46,34 +48,41 @@ public class JwtRequestFilter extends OncePerRequestFilter{
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        String username = null;
-        String jwt = null;
-                
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
+        
+        if (!request.getRequestURI().equals("/api/auth") && !request.getRequestURI().equals("/api/reg") && !request.getRequestURI().startsWith("/ws")) {
+            String authHeader = request.getHeader("Authorization");
+            String username = null;
+            String jwt = null;
             try {
+                jwt = authHeader.substring(7);
                 username = jwtTokenUtil.getUsername(jwt);
+                if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+                    UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                        username, 
+                        null, 
+                        jwtTokenUtil.getRoles(jwt).stream()
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList())
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(token);
+                }
             } catch (ExpiredJwtException | SignatureException e){
-                response.setCharacterEncoding("UTF-8");
-                response.setContentType("text/plain; charset=UTF-8");
-                logger.info(UserError.TOKEN_EXPIRED.getMessage());
+                response.setContentType("application/json;charset=UTF-8");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write(UserError.TOKEN_EXPIRED.getMessage().toString());
-            } catch (IllegalArgumentException e) {
-                response.setCharacterEncoding("UTF-8");
-                response.setContentType("text/plain; charset=UTF-8");
-                logger.info(UserError.TOKEN_INVALID.getMessage());
+                AppError error = new AppError(HttpServletResponse.SC_UNAUTHORIZED, UserError.TOKEN_EXPIRED.getMessage());
+                ObjectMapper mapper = new ObjectMapper();
+                response.getWriter().write(mapper.writeValueAsString(error));
+                return;
+            } catch (Exception e) {
+                response.setContentType("application/json;charset=UTF-8");
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
-                response.getWriter().write(UserError.TOKEN_INVALID.getMessage());
+                AppError error = new AppError(HttpStatus.BAD_REQUEST.value(), UserError.TOKEN_INVALID.getMessage());
+                ObjectMapper mapper = new ObjectMapper();
+                response.getWriter().write(mapper.writeValueAsString(error));
+                return;
             }
         }
 
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, null, jwtTokenUtil.getRoles(jwt).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-            SecurityContextHolder.getContext().setAuthentication(token);
-        }
-        
         filterChain.doFilter(request, response);
     }
 }
