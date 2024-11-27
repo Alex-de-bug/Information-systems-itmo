@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alwx.backend.dtos.AdminRightsRequest;
 import com.alwx.backend.dtos.AppError;
@@ -29,6 +31,7 @@ import com.alwx.backend.models.enums.Action;
 import com.alwx.backend.service.AuthService;
 import com.alwx.backend.service.UserActionService;
 import com.alwx.backend.service.UserService;
+import com.alwx.backend.service.VehicleImportService;
 import com.alwx.backend.service.VehicleService;
 
 import jakarta.validation.Valid;
@@ -72,6 +75,8 @@ public class UserController {
      * Шаблон для отправки сообщений через WebSocket.
      */
     private final SimpMessagingTemplate messagingTemplate;
+
+    private final VehicleImportService vehicleImportService;
 
     /**
      * Получает таблицу с автомобилями для пользователей.
@@ -187,6 +192,18 @@ public class UserController {
     @GetMapping("/token")
     public ResponseEntity<?> updateToken(@RequestHeader(name = "Authorization") String token){
         return authService.updateAuthToken(token);
+    }
+
+    @PostMapping("/vehicles/import")
+    public ResponseEntity<?> importVehicles(@RequestHeader(name = "Authorization") String token, @RequestParam("file") MultipartFile file){
+
+        ResponseEntity<?> response = vehicleImportService.processImport(file);
+        if(response.getStatusCode().equals(HttpStatus.OK)){
+            userActionService.logAction(Action.CREATE_VEHICLE, token.substring(7), null);
+            messagingTemplate.convertAndSend("/topic/tableUpdates", 
+                "{\"message\": \"Данные в таблице обновлены\"}");
+        }
+        return response;
     }
 }
 

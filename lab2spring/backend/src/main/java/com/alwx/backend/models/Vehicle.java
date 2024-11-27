@@ -42,7 +42,7 @@ public class Vehicle {
     private String name;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "coordinates_id")
     private Coordinates coordinates;
 

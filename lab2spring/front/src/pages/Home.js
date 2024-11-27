@@ -10,6 +10,7 @@ import { Client } from '@stomp/stompjs';
 import axios from 'axios';
 import VehicleFilter from '../components/VehicleFilter';
 import VehicleMap from '../components/VehicleMap';
+import VehicleImport from '../components/VehicleImport';
 
 const Home = () => {
 
@@ -83,6 +84,7 @@ const Home = () => {
           />
           </Grid>
           <Grid item xs={6}>
+            <VehicleImport/>
             <VehicleFilter vehicles={vehicles} />
           </Grid>
         </Grid>

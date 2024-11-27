@@ -58,6 +58,7 @@ public class VehicleService {
      * @param token Токен аутентификации
      * @return ResponseEntity с результатом обновления
      */
+    @Transactional
     public ResponseEntity<?> updateVehicle(Long id, RequestVehicle newVehicle ,String token){
         if(!userRepository.findByUsername(jwtTokenUtil.getUsername(token)).isPresent()){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Ваш токен не действителен"), HttpStatus.BAD_REQUEST);
@@ -98,6 +99,7 @@ public class VehicleService {
                     Coordinates coordinates = new Coordinates();
                     coordinates.setX(newVehicle.getX());
                     coordinates.setY(newVehicle.getY());
+                    coordinatesRepositury.saveAndFlush(coordinates);
                     vehicle.setCoordinates(coordinates);
                 }
 
@@ -155,6 +157,7 @@ public class VehicleService {
      * @param reassignId ID автомобиля, на который будет переназначено ТС
      * @return ResponseEntity с результатом удаления
      */
+    @Transactional
     public ResponseEntity<?> deleteVehicle(Long id, String token, String reassignId){
         if(!userRepository.findByUsername(jwtTokenUtil.getUsername(token)).isEmpty()){
             User user = userRepository.findByUsername(jwtTokenUtil.getUsername(token)).get();
@@ -205,6 +208,7 @@ public class VehicleService {
      */
     @Transactional
     public ResponseEntity<?> createVehicle(RequestVehicle newVehicle){
+        System.out.println("");
         if(newVehicle.getFuelConsumption() < (5.0+newVehicle.getEnginePower()*0.03)){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.ENGINE_FUEL.getMessage()+(5.0+newVehicle.getEnginePower()*0.03)), HttpStatus.BAD_REQUEST);
         }
@@ -235,6 +239,7 @@ public class VehicleService {
             Coordinates coordinates = new Coordinates();
             coordinates.setX(newVehicle.getX());
             coordinates.setY(newVehicle.getY());
+            coordinatesRepositury.saveAndFlush(coordinates);
             vehicle.setCoordinates(coordinates);
         }
 
