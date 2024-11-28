@@ -63,6 +63,7 @@ public class VehicleImportService {
 
     public ResponseEntity<?> processImport(MultipartFile file) {
         List<RequestVehicle> vehicles = new ArrayList<>();
+        Long addedCarsCount = 0l;
         try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
                 .setHeader()
@@ -118,10 +119,11 @@ public class VehicleImportService {
         if(vehicles.size() != 0){
             try {
                 saveVehicles(vehicles);
+                addedCarsCount = Integer.toUnsignedLong(vehicles.size());
             } catch (ConstraintViolationException e) {
                 return new ResponseEntity<>(
                     new AppError(HttpStatus.BAD_REQUEST.value(), 
-                    "Одна из импортируемых машин уже существует"), 
+                    "Одна или более импортируемых машин уже существует(ют)"), 
                     HttpStatus.BAD_REQUEST
                 );
             } catch (Exception e) {                
@@ -133,7 +135,7 @@ public class VehicleImportService {
             }
         }
     
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(addedCarsCount, HttpStatus.OK);
     }
 
     private RequestVehicle processRecord(CSVRecord record) throws IllegalArgumentException {

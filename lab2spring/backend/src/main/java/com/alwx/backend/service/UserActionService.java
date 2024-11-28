@@ -34,12 +34,12 @@ public class UserActionService {
     public void logAction(Action action, String token, Long vehicleId) {
         if(jwtTokenUtil.getUsername(token) != null) {
             User user = userRepository.findByUsername(jwtTokenUtil.getUsername(token)).get();
-                UserAction userAction = new UserAction();
-                userAction.setUser(user);
-                userAction.setVehicleId(vehicleId);
-                userAction.setAction(action);
-                userAction.setTimestamp(LocalDateTime.now());
-                userActionRepository.save(userAction);
+            UserAction userAction = new UserAction();
+            userAction.setUser(user);
+            userAction.setVehicleId(vehicleId);
+            userAction.setAction(action);
+            userAction.setTimestamp(LocalDateTime.now());
+            userActionRepository.save(userAction);
         }
     }
 }

@@ -1,5 +1,6 @@
 import { 
     Button, 
+    Paper,
 } from '@mui/material';
 import { useState, useRef } from 'react';
 import axios from 'axios';
@@ -28,7 +29,7 @@ const VehicleImport = () => {
         formData.append('file', selectedFile);
 
         try {
-            await axios.post(
+            var response = await axios.post(
                 `http://${process.env.REACT_APP_SERVER}/api/user/vehicles/import`,
                 formData,
                 {
@@ -37,10 +38,10 @@ const VehicleImport = () => {
                     }
                 }
             );
-
+            console.log();
             dispatch(setNotification({
                 color: 'success',
-                message: 'Импорт прошёл успешно'
+                message: `Импорт прошёл успешно. Добавлено ${response.data} ТС`
             }));
             setSelectedFile(null);
             if (fileInputRef.current) {
@@ -60,7 +61,7 @@ const VehicleImport = () => {
       };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'flex-start' }}>
+        <Paper sx={{mb: 2, p:2, borderRadius: 2, backgroundColor: 'rgba(0, 0, 0, 0.87)', }}>
             <input
                 ref={fileInputRef}
                 type="file"
@@ -76,7 +77,7 @@ const VehicleImport = () => {
             >
                 Импортировать
             </Button>
-        </div>
+        </Paper>
     );
 };
 

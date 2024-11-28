@@ -11,6 +11,7 @@ import axios from 'axios';
 import VehicleFilter from '../components/VehicleFilter';
 import VehicleMap from '../components/VehicleMap';
 import VehicleImport from '../components/VehicleImport';
+import ImportStatusTable from '../components/ImportStatusTable';
 
 const Home = () => {
 
@@ -86,6 +87,7 @@ const Home = () => {
           <Grid item xs={6}>
             <VehicleImport/>
             <VehicleFilter vehicles={vehicles} />
+            <ImportStatusTable/>
           </Grid>
         </Grid>
       </Box>

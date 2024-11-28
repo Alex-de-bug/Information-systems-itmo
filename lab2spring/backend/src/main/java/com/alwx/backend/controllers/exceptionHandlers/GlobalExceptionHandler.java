@@ -82,7 +82,6 @@ public class GlobalExceptionHandler {
 
     /**
      * Обрабатывает нарушения целостности базы данных 
-     * (например, превышение длины поля).
      * @param ex Исключение DataIntegrityViolationException
      * @param locale Текущая локаль
      * @return ResponseEntity с деталями ошибки

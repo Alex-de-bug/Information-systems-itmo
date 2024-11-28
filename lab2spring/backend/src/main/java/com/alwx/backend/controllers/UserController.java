@@ -28,7 +28,9 @@ import com.alwx.backend.dtos.RequestVehicle;
 import com.alwx.backend.dtos.SimpleInfoAboutCars;
 import com.alwx.backend.models.Vehicle;
 import com.alwx.backend.models.enums.Action;
+import com.alwx.backend.models.enums.StatusType;
 import com.alwx.backend.service.AuthService;
+import com.alwx.backend.service.ImportRequestService;
 import com.alwx.backend.service.UserActionService;
 import com.alwx.backend.service.UserService;
 import com.alwx.backend.service.VehicleImportService;
@@ -50,26 +52,24 @@ public class UserController {
     /**
      * Сервис для работы с автомобилями.
      */
-    @Autowired
-    private VehicleService vehicleService;
+    private final VehicleService vehicleService;
 
     /**
      * Сервис для работы с пользователями.
      */
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     /**
      * Сервис для работы с аутентификацией и регистрацией пользователей.
      */
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
     /**
      * Сервис для логирования действий пользователей.
      */
-    @Autowired
-    private UserActionService userActionService;
+    private final UserActionService userActionService;
+
+    private final ImportRequestService importRequestService;
 
     /**
      * Шаблон для отправки сообщений через WebSocket.
@@ -199,11 +199,19 @@ public class UserController {
 
         ResponseEntity<?> response = vehicleImportService.processImport(file);
         if(response.getStatusCode().equals(HttpStatus.OK)){
-            userActionService.logAction(Action.CREATE_VEHICLE, token.substring(7), null);
+            importRequestService.saveT(StatusType.DONE, token.substring(7), (Long) response.getBody());
             messagingTemplate.convertAndSend("/topic/tableUpdates", 
                 "{\"message\": \"Данные в таблице обновлены\"}");
+        }else{
+            importRequestService.saveT(StatusType.ERROR, token.substring(7), 0l);
         }
+        messagingTemplate.convertAndSend("/topic/istat", "{\"message\": \"Данные в таблице статусов обновлены\"}");
         return response;
+    }
+
+    @GetMapping("/vehicles/istat")
+    public ResponseEntity<?> getImportStatuses(@RequestHeader(name = "Authorization") String token){
+        return importRequestService.getStatuses(token.substring(7));
     }
 }
 
