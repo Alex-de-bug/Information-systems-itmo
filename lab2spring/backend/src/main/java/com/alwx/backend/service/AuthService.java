@@ -10,6 +10,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.alwx.backend.dtos.AppError;
@@ -61,6 +63,7 @@ public class AuthService {
      * @param registrationUserDto объект с данными нового пользователя
      * @return ResponseEntity с информацией о новом пользователе или ошибкой
      */
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ResponseEntity<?> createNewUser(@RequestBody RegUserDto registrationUserDto) {
         if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.PASSWORDS_DO_NOT_MATCH.getMessage()), HttpStatus.BAD_REQUEST);

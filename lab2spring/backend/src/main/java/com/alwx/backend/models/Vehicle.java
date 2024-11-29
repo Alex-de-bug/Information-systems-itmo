@@ -3,6 +3,7 @@ package com.alwx.backend.models;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+
 import com.alwx.backend.models.enums.FuelType;
 import com.alwx.backend.models.enums.VehicleType;
 

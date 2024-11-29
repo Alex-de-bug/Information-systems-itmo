@@ -48,8 +48,6 @@ public class VehicleImportService {
         "вместимость", "путь", "расход", "топливо", "создатели", "редактирование"
     );
 
-    private final VehicleRepository repository;
-
     private final Validator validator;
 
     private final CoordinatesRepositury coordinatesRepositury;
