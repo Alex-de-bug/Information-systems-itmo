@@ -99,6 +99,7 @@ public class UserService implements UserDetailsService {
      * @param registrationUserDto объект с данными нового пользователя
      * @return созданный пользователь
      */
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public User createNewUser(RegUserDto registrationUserDto) {
         User user = new User();
         user.setUsername(registrationUserDto.getUsername());

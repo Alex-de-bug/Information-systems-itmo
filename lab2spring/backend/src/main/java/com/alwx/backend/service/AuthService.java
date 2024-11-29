@@ -3,6 +3,7 @@ package com.alwx.backend.service;
 
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -63,22 +64,31 @@ public class AuthService {
      * @param registrationUserDto объект с данными нового пользователя
      * @return ResponseEntity с информацией о новом пользователе или ошибкой
      */
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public ResponseEntity<?> createNewUser(@RequestBody RegUserDto registrationUserDto) {
-        if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.PASSWORDS_DO_NOT_MATCH.getMessage()), HttpStatus.BAD_REQUEST);
+        try {
+            if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.PASSWORDS_DO_NOT_MATCH.getMessage()), HttpStatus.BAD_REQUEST);
+            }
+            if (userService.findByUsername(registrationUserDto.getUsername()).isPresent()) {
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.USER_ALREADY_EXISTS.getMessage()), HttpStatus.BAD_REQUEST);
+            }
+            if (registrationUserDto.getUsername().length() < 3 || registrationUserDto.getUsername().length() > 20) {
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.LOGIN_INVALID.getMessage()), HttpStatus.BAD_REQUEST);
+            }
+            if (registrationUserDto.getPassword().length() < 3 || registrationUserDto.getPassword().length() > 20) {
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.PASS_INVALID.getMessage()), HttpStatus.BAD_REQUEST);
+            }
+
+            User user = userService.createNewUser(registrationUserDto);
+
+            return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername()));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new AppError(
+                HttpStatus.BAD_REQUEST.value(),
+                "Пользователь уже существует"),
+                HttpStatus.BAD_REQUEST);
         }
-        if (userService.findByUsername(registrationUserDto.getUsername()).isPresent()) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.USER_ALREADY_EXISTS.getMessage()), HttpStatus.BAD_REQUEST);
-        }
-        if (registrationUserDto.getUsername().length() < 3 || registrationUserDto.getUsername().length() > 20) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.LOGIN_INVALID.getMessage()), HttpStatus.BAD_REQUEST);
-        }
-        if (registrationUserDto.getPassword().length() < 3 || registrationUserDto.getPassword().length() > 20) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), UserError.PASS_INVALID.getMessage()), HttpStatus.BAD_REQUEST);
-        }
-        User user = userService.createNewUser(registrationUserDto);
-        return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername()));
     }
 
     /**

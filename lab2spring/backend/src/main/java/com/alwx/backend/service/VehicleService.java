@@ -66,7 +66,7 @@ public class VehicleService {
      * @param token Токен аутентификации
      * @return ResponseEntity с результатом обновления
      */
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ResponseEntity<?> updateVehicle(Long id, RequestVehicle newVehicle ,String token){
         try {
             Vehicle vehicle = vehicleRepository.findByIdWithLock(id)
@@ -183,7 +183,7 @@ public class VehicleService {
      * @param reassignId ID автомобиля, на который будет переназначено ТС
      * @return ResponseEntity с результатом удаления
      */
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ResponseEntity<?> deleteVehicle(Long id, String token, String reassignId) {
         try {
             Optional<User> userOpt = userRepository.findByUsername(jwtTokenUtil.getUsername(token));
@@ -245,6 +245,11 @@ public class VehicleService {
             return new ResponseEntity<>(new AppError(
                 HttpStatus.BAD_REQUEST.value(),
                 e.getMessage()),
+                HttpStatus.BAD_REQUEST);
+        }catch (org.springframework.transaction.UnexpectedRollbackException e) {
+            return new ResponseEntity<>(new AppError(
+                HttpStatus.BAD_REQUEST.value(),
+                "Транзакция было откачена, так как объект успели изменить до вас"),
                 HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(new AppError(
