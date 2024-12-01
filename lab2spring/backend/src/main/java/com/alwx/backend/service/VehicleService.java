@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 
+import com.alwx.backend.controllers.exceptionHandlers.exceptions.BusinessValidationException;
 import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.dtos.RequestVehicle;
 import com.alwx.backend.models.Coordinates;
@@ -127,6 +128,11 @@ public class VehicleService {
                     convertOwners.add(userRepository.findByUsername(owner).get());
                 }
             }
+
+            if(convertOwners.size() > 3){
+                throw new BusinessValidationException("Превышено максимальное количество владельцев (3)");
+            }
+
             vehicle.setUsers(convertOwners);
 
             if(convertOwners.isEmpty()){
@@ -267,6 +273,9 @@ public class VehicleService {
             if(userRepository.findByUsername(owner).isPresent()){
                 convertOwners.add(userRepository.findByUsername(owner).get());
             }
+        }
+        if(convertOwners.size() > 3){
+            throw new BusinessValidationException("Превышено максимальное количество владельцев (3)");
         }
         vehicle.setUsers(convertOwners);
 

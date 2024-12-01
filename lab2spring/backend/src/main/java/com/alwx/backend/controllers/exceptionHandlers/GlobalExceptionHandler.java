@@ -16,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.alwx.backend.controllers.exceptionHandlers.exceptions.BusinessValidationException;
 import com.alwx.backend.dtos.AppError;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -31,6 +32,17 @@ public class GlobalExceptionHandler {
 
     @Autowired
     private MessageSource messageSource;
+
+    @ExceptionHandler(BusinessValidationException.class)
+    public ResponseEntity<AppError> handleBusinessValidationException(BusinessValidationException ex, Locale locale) {
+        return new ResponseEntity<>(
+                new AppError(
+                    HttpStatus.CONFLICT.value(), 
+                    ex.getMessage()
+                ), 
+                HttpStatus.CONFLICT
+            );
+    }
 
     @ExceptionHandler(CannotAcquireLockException.class)
     public ResponseEntity<AppError> handleCannotAcquireLockException(CannotAcquireLockException ex, Locale locale) {
@@ -114,7 +126,6 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обрабатывает исключения, возникающие при невалидации аргументов метода.
      * @param ex Исключение MethodArgumentNotValidException
      * @param locale Текущая локаль
      * @return ResponseEntity с деталями ошибки
