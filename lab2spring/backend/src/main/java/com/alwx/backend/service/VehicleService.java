@@ -218,7 +218,7 @@ public class VehicleService {
      * @param newVehicle Объект с данными для создания
      * @return ResponseEntity с результатом создания
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRED)
     public ResponseEntity<?> createVehicle(RequestVehicle newVehicle){
 
         String constraintsError = checkNewConstraints(newVehicle);

@@ -4,33 +4,26 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.dtos.RequestVehicle;
-import com.alwx.backend.models.Coordinates;
-import com.alwx.backend.models.User;
-import com.alwx.backend.models.Vehicle;
 import com.alwx.backend.models.enums.FuelType;
 import com.alwx.backend.models.enums.VehicleType;
-import com.alwx.backend.repositories.CoordinatesRepositury;
-import com.alwx.backend.repositories.UserRepository;
 import com.alwx.backend.utils.UserError;
 
 import jakarta.persistence.EntityManager;
@@ -49,17 +42,12 @@ public class VehicleImportService {
 
     private final Validator validator;
 
-    private final CoordinatesRepositury coordinatesRepositury;
-
-    private final UserRepository userRepository;
-
-    private final TransactionTemplate transactionTemplate;
-
     private final VehicleService vehicleService;
 
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public ResponseEntity<?> processImport(MultipartFile file) {
         List<RequestVehicle> vehicles = new ArrayList<>();
         Long addedCarsCount = 0l;
@@ -116,22 +104,10 @@ public class VehicleImportService {
         }
 
         if(vehicles.size() != 0){
-            try {
-                saveVehicles(vehicles);
-                addedCarsCount = Integer.toUnsignedLong(vehicles.size());
-            } catch (ConstraintViolationException e) {
-                return new ResponseEntity<>(
-                    new AppError(HttpStatus.BAD_REQUEST.value(), 
-                    "Одна или более импортируемых машин уже существует(ют)"), 
-                    HttpStatus.BAD_REQUEST
-                );
-            } catch (Exception e) {                
-                return new ResponseEntity<>(
-                    new AppError(HttpStatus.BAD_REQUEST.value(), 
-                    "Ошибка при сохранении транспортных средств"), 
-                    HttpStatus.BAD_REQUEST
-                );
-            }
+            for (RequestVehicle vehicle : vehicles) {
+                vehicleService.createVehicle(vehicle);
+            } 
+            addedCarsCount = Integer.toUnsignedLong(vehicles.size());
         }
     
         return new ResponseEntity<>(addedCarsCount, HttpStatus.OK);
@@ -242,70 +218,5 @@ public class VehicleImportService {
 
     private boolean validateHeaders(Set<String> headers) {
         return headers.containsAll(REQUIRED_HEADERS)&&headers.size()==12;
-    }
-
-    private void saveVehicles(List<RequestVehicle> vehicles) {
-        transactionTemplate.execute(status -> {
-            try {
-                List<Vehicle> entitiesToSave = new ArrayList<>();
-                Map<String, Coordinates> coordinatesCache = new HashMap<>();
-                
-                for (RequestVehicle vehicle : vehicles) {
-                    Vehicle entity = new Vehicle();
-                    entity.setName(vehicle.getName());
-
-                    String coordKey = vehicle.getX() + ":" + vehicle.getY();
-                    
-                    Coordinates coordinates = coordinatesCache.computeIfAbsent(coordKey, k -> {
-                        return coordinatesRepositury.findByXAndY(vehicle.getX(), vehicle.getY())
-                            .orElseGet(() -> {
-                                Coordinates newCoord = new Coordinates();
-                                newCoord.setX(vehicle.getX());
-                                newCoord.setY(vehicle.getY());
-                                return newCoord;
-                            });
-                    });
-            
-                    entity.setCoordinates(coordinates);
-
-                    entity.setType(VehicleType.valueOf(vehicle.getType()));
-                    entity.setEnginePower(vehicle.getEnginePower());
-                    entity.setNumberOfWheels(vehicle.getNumberOfWheels());
-                    entity.setCapacity(vehicle.getCapacity());
-                    entity.setDistanceTravelled(vehicle.getDistanceTravelled());
-                    entity.setFuelConsumption(vehicle.getFuelConsumption());
-                    entity.setFuelType(FuelType.valueOf(vehicle.getFuelType()));
-
-                    LocalDateTime localDateTime = LocalDateTime.now();
-                    entity.setCreationDate(localDateTime);
-
-                    List<String> owners = vehicle.getNamesOfOwners();
-                    List<User> convertOwners = new ArrayList<>();
-                    for (String owner : owners) {
-                        userRepository.findByUsername(owner).ifPresent(convertOwners::add);
-                    }
-                    entity.setUsers(convertOwners);
-
-                    if (convertOwners.isEmpty()) {
-                        entity.setPermissionToEdit(true);
-                    } else {
-                        entity.setPermissionToEdit(vehicle.getPermissionToEdit());
-                    }
-
-                    entitiesToSave.add(entity);
-                }
-
-                coordinatesCache.values().stream()
-                    .filter(c -> c.getId() == null)
-                    .forEach(entityManager::persist);
-
-                entitiesToSave.forEach(entityManager::persist);
-                
-                return null;
-            } catch (Exception e) {
-                status.setRollbackOnly();
-                throw e;
-            }
-        });
     }
 }
