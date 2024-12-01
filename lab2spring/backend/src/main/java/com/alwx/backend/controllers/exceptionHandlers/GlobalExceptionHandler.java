@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,6 @@ import com.alwx.backend.dtos.AppError;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
-import jakarta.validation.ConstraintViolationException;
 
 /**
  * Глобальный обработчик исключений для приложения. Обеспечивает
@@ -31,6 +31,17 @@ public class GlobalExceptionHandler {
 
     @Autowired
     private MessageSource messageSource;
+
+    @ExceptionHandler(CannotAcquireLockException.class)
+    public ResponseEntity<AppError> handleCannotAcquireLockException(CannotAcquireLockException ex, Locale locale) {
+        return new ResponseEntity<>(
+                new AppError(
+                    HttpStatus.CONFLICT.value(), 
+                    "Данный объект в настоящее время редактируется другим пользователем. Пожалуйста, повторите попытку позже."
+                ), 
+                HttpStatus.CONFLICT
+            );
+    }
 
     /**
      * Обрабатывает исключения, возникающие при невозможности чтения тела

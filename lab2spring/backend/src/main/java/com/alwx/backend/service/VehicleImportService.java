@@ -31,7 +31,6 @@ import com.alwx.backend.models.enums.FuelType;
 import com.alwx.backend.models.enums.VehicleType;
 import com.alwx.backend.repositories.CoordinatesRepositury;
 import com.alwx.backend.repositories.UserRepository;
-import com.alwx.backend.repositories.VehicleRepository;
 import com.alwx.backend.utils.UserError;
 
 import jakarta.persistence.EntityManager;
@@ -55,6 +54,8 @@ public class VehicleImportService {
     private final UserRepository userRepository;
 
     private final TransactionTemplate transactionTemplate;
+
+    private final VehicleService vehicleService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -206,6 +207,11 @@ public class VehicleImportService {
 
             default:
                 break;
+        }
+
+        String constraintsError = vehicleService.checkNewConstraints(vehicle);
+        if(constraintsError != null) {
+            throw new IllegalArgumentException(constraintsError);
         }
 
         Set<ConstraintViolation<RequestVehicle>> violations = validator.validate(vehicle);
