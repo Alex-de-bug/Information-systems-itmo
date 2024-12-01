@@ -64,7 +64,11 @@ const NewVehicleForm = () => {
                 Authorization: `Bearer ${localStorage.getItem("token")}`, 
             },
         });
-      console.log('Response:', response.data);
+        dispatch(setNotification({
+          color: 'success',
+          message: 'Машина успешно добавлена'
+        }));
+        console.log(response);
     } catch (error) {
       dispatch(setNotification({
         color: 'error',

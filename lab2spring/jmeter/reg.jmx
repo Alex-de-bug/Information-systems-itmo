@@ -638,7 +638,7 @@
           </hashTree>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create vehicle different users">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create vehicle different users" enabled="false">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">0</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -1203,7 +1203,7 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="logins and pass for users" enabled="true">
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="logins and pass for users">
           <collectionProp name="Arguments.arguments">
             <elementProp name="user_login_1" elementType="Argument">
               <stringProp name="Argument.name">user_login_1</stringProp>
@@ -1228,7 +1228,7 @@
           </collectionProp>
         </Arguments>
         <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Variables" enabled="true">
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Variables">
           <collectionProp name="Arguments.arguments">
             <elementProp name="name_for_par_update_1" elementType="Argument">
               <stringProp name="Argument.name">name_for_par_update_1</stringProp>
@@ -1253,7 +1253,7 @@
           </collectionProp>
         </Arguments>
         <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Variables" enabled="true">
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Variables">
           <collectionProp name="Arguments.arguments">
             <elementProp name="x" elementType="Argument">
               <stringProp name="Argument.name">x</stringProp>
@@ -1308,7 +1308,7 @@
           </collectionProp>
         </Arguments>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="reg 1" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="reg 1">
           <stringProp name="HTTPSampler.domain">${name_serv}</stringProp>
           <stringProp name="HTTPSampler.port">${port}</stringProp>
           <stringProp name="HTTPSampler.path">/api/reg</stringProp>
@@ -1331,7 +1331,7 @@
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="login user 1" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="login user 1">
           <stringProp name="HTTPSampler.domain">${name_serv}</stringProp>
           <stringProp name="HTTPSampler.port">${port}</stringProp>
           <stringProp name="HTTPSampler.path">/api/auth</stringProp>
@@ -2504,7 +2504,7 @@
           </hashTree>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Import vehicle" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Import vehicle">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">0</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>

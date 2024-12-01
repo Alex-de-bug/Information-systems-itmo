@@ -63,7 +63,7 @@ public class VehicleService {
      * @param token Токен аутентификации
      * @return ResponseEntity с результатом обновления
      */
-    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = Exception.class, timeout = 15)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ResponseEntity<?> updateVehicle(Long id, RequestVehicle newVehicle ,String token){
         Optional<Vehicle> vehicleOpt = vehicleRepository.findById(id);
         if(!vehicleOpt.isPresent()){
@@ -155,7 +155,7 @@ public class VehicleService {
      * @param reassignId ID автомобиля, на который будет переназначено ТС
      * @return ResponseEntity с результатом удаления
      */
-    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = Exception.class, timeout = 15)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ResponseEntity<?> deleteVehicle(Long id, String token, String reassignId) {
         Optional<Vehicle> vehicleOpt = vehicleRepository.findById(id);
         if (!vehicleOpt.isPresent()) {
@@ -218,7 +218,7 @@ public class VehicleService {
      * @param newVehicle Объект с данными для создания
      * @return ResponseEntity с результатом создания
      */
-    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRED)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ResponseEntity<?> createVehicle(RequestVehicle newVehicle){
 
         String constraintsError = checkNewConstraints(newVehicle);
@@ -293,7 +293,7 @@ public class VehicleService {
         }
         switch (vehicle.getType()) {
             case "PLANE":{
-                if(vehicle.getEnginePower() < 100) UserError.ENGINE_PLANE.getMessage();
+                if(vehicle.getEnginePower() < 100) return UserError.ENGINE_PLANE.getMessage();
                 break;
             }
             case "BOAT":{

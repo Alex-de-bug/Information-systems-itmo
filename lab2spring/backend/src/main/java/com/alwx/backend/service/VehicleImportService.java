@@ -47,7 +47,7 @@ public class VehicleImportService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ResponseEntity<?> processImport(MultipartFile file) {
         List<RequestVehicle> vehicles = new ArrayList<>();
         Long addedCarsCount = 0l;
@@ -163,27 +163,6 @@ public class VehicleImportService {
             Arrays.asList(record.get("создатели").split(" ")), 
             editPermission
         );
-
-        if(vehicle.getFuelConsumption() < (5.0+vehicle.getEnginePower()*0.03)){
-            throw new IllegalArgumentException(UserError.ENGINE_FUEL.getMessage()+(5.0+vehicle.getEnginePower()*0.03));
-        }
-        switch (vehicle.getType()) {
-            case "PLANE":{
-                if(vehicle.getEnginePower() < 100) throw new IllegalArgumentException(UserError.ENGINE_PLANE.getMessage());
-                break;
-            }
-            case "BOAT":{
-                if(vehicle.getEnginePower() < 2.5) throw new IllegalArgumentException(UserError.ENGINE_BOAT.getMessage());
-                break;
-            }
-            case "BICYCLE":{
-                if(vehicle.getEnginePower() < 350) throw new IllegalArgumentException(UserError.ENGINE_BICYCLE.getMessage());
-                break;
-            }
-
-            default:
-                break;
-        }
 
         String constraintsError = vehicleService.checkNewConstraints(vehicle);
         if(constraintsError != null) {
