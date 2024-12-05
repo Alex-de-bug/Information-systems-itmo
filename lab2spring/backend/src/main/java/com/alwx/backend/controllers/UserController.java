@@ -118,7 +118,13 @@ public class UserController {
             return ResponseEntity.badRequest().body(new AppError(HttpStatus.BAD_REQUEST.value(), errors.toString()));
         }
 
-        ResponseEntity<?> response = vehicleService.updateVehicle(id, newVehicle, token.substring(7));
+        ResponseEntity<?> response;
+        try{
+            lockProvider.getReentranLock().lock();
+            response = vehicleService.updateVehicle(id, newVehicle, token.substring(7));
+        }finally{
+            lockProvider.getReentranLock().unlock();
+        }
 
         if(response.getStatusCode().equals(HttpStatus.OK)){
             userActionService.logAction(Action.UPDATE_VEHICLE, token.substring(7), id);
@@ -166,19 +172,22 @@ public class UserController {
                 .body(new AppError(HttpStatus.BAD_REQUEST.value(), errors.toString()));
         }
 
-        while(!lockProvider.getReentranLock().isHeldByCurrentThread()){
+        ResponseEntity<?> response;
+        try{
             lockProvider.getReentranLock().lock();
+            response = vehicleService.createVehicle(newVehicle); 
+        }finally{
+            lockProvider.getReentranLock().unlock();
         }
 
-        ResponseEntity<?> response = vehicleService.createVehicle(newVehicle);
+        
         if(response.getStatusCode().equals(HttpStatus.OK)){
             Map<String, Long> responseBody = (Map<String, Long>) response.getBody();
             userActionService.logAction(Action.CREATE_VEHICLE, token.substring(7),  responseBody.get("id"));
             messagingTemplate.convertAndSend("/topic/tableUpdates", 
                 "{\"message\": \"Данные в таблице обновлены\"}");
         }
-
-        lockProvider.getReentranLock().unlock();
+        
         
         return response;
     }
@@ -209,7 +218,17 @@ public class UserController {
     @PostMapping("/vehicles/import")
     public ResponseEntity<?> importVehicles(@RequestHeader(name = "Authorization") String token, @RequestParam("file") MultipartFile file){
 
-        ResponseEntity<?> response = vehicleImportService.processImport(file);
+
+        ResponseEntity<?> response;
+        try{
+            while(!lockProvider.getReentranLock().isHeldByCurrentThread()){
+                lockProvider.getReentranLock().lock();
+            }
+            response = vehicleImportService.processImport(file, token);
+        }finally{
+            lockProvider.getReentranLock().unlock();
+        }
+        
         if(response.getStatusCode().equals(HttpStatus.OK)){
             importRequestService.saveT(StatusType.DONE, token.substring(7), (Long) response.getBody());
             messagingTemplate.convertAndSend("/topic/tableUpdates", 

@@ -11,13 +11,17 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.alwx.backend.controllers.exceptionHandlers.exceptions.BusinessValidationException;
+import com.alwx.backend.controllers.exceptionHandlers.exceptions.ImportValidationException;
 import com.alwx.backend.dtos.AppError;
+import com.alwx.backend.models.enums.StatusType;
+import com.alwx.backend.service.ImportRequestService;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
@@ -33,6 +37,9 @@ public class GlobalExceptionHandler {
     @Autowired
     private MessageSource messageSource;
 
+    @Autowired
+    private ImportRequestService importRequest;
+
     @ExceptionHandler(BusinessValidationException.class)
     public ResponseEntity<AppError> handleBusinessValidationException(BusinessValidationException ex, Locale locale) {
         return new ResponseEntity<>(
@@ -44,12 +51,35 @@ public class GlobalExceptionHandler {
             );
     }
 
+    @ExceptionHandler(ImportValidationException.class)
+    public ResponseEntity<AppError> handleImportValidationException(ImportValidationException ex, Locale locale) {
+        importRequest.saveT(StatusType.ERROR, ex.getMessage().substring(7), 0l);
+        return new ResponseEntity<>(
+                new AppError(
+                    HttpStatus.CONFLICT.value(), 
+                    "Некоторые машины уже существуют."
+                ), 
+                HttpStatus.CONFLICT
+            );
+    }
+
     @ExceptionHandler(CannotAcquireLockException.class)
     public ResponseEntity<AppError> handleCannotAcquireLockException(CannotAcquireLockException ex, Locale locale) {
         return new ResponseEntity<>(
                 new AppError(
                     HttpStatus.CONFLICT.value(), 
                     "Данный объект в настоящее время редактируется другим пользователем. Пожалуйста, повторите попытку позже."
+                ), 
+                HttpStatus.CONFLICT
+            );
+    }
+
+    @ExceptionHandler(UnexpectedRollbackException.class)
+    public ResponseEntity<AppError> handleUnexpectedRollbackException(UnexpectedRollbackException ex, Locale locale) {
+        return new ResponseEntity<>(
+                new AppError(
+                    HttpStatus.CONFLICT.value(), 
+                    "Повторите запрос, позже"
                 ), 
                 HttpStatus.CONFLICT
             );

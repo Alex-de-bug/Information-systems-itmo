@@ -69,6 +69,17 @@ public class VehicleService {
      */
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ResponseEntity<?> updateVehicle(Long id, RequestVehicle newVehicle ,String token){
+
+        if(vehicleRepository.existsByName(newVehicle.getName())){
+            return new ResponseEntity<>(
+                new AppError(
+                    HttpStatus.BAD_REQUEST.value(), 
+                    "Машина с таким именем уже существует."
+                ), 
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
         Optional<Vehicle> vehicleOpt = vehicleRepository.findById(id);
         if(!vehicleOpt.isPresent()){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Выбранной машины нет в репозитории"), HttpStatus.BAD_REQUEST);
@@ -239,9 +250,7 @@ public class VehicleService {
                 HttpStatus.BAD_REQUEST
             );
         }
-        Date now = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        System.out.println(sdf.format(now));
+        
 
         String constraintsError = checkNewConstraints(newVehicle);
         if(constraintsError != null) {

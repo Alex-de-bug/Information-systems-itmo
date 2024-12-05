@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -20,6 +23,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alwx.backend.controllers.exceptionHandlers.exceptions.BusinessValidationException;
+import com.alwx.backend.controllers.exceptionHandlers.exceptions.ImportValidationException;
 import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.dtos.RequestVehicle;
 import com.alwx.backend.models.enums.FuelType;
@@ -48,7 +53,10 @@ public class VehicleImportService {
     private EntityManager entityManager;
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ResponseEntity<?> processImport(MultipartFile file) {
+    public ResponseEntity<?> processImport(MultipartFile file, String token) {
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        System.out.println(sdf.format(now));
         List<RequestVehicle> vehicles = new ArrayList<>();
         Long addedCarsCount = 0l;
         try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
@@ -105,7 +113,10 @@ public class VehicleImportService {
 
         if(vehicles.size() != 0){
             for (RequestVehicle vehicle : vehicles) {
-                vehicleService.createVehicle(vehicle);
+                ResponseEntity<?> tmp = vehicleService.createVehicle(vehicle);
+                if(tmp.getStatusCode() != HttpStatus.OK){
+                    throw new ImportValidationException(token);
+                }
             } 
             addedCarsCount = Integer.toUnsignedLong(vehicles.size());
         }
