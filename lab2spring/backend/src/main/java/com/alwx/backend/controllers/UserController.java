@@ -1,6 +1,7 @@
 package com.alwx.backend.controllers;
 
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import com.alwx.backend.service.UserActionService;
 import com.alwx.backend.service.UserService;
 import com.alwx.backend.service.VehicleImportService;
 import com.alwx.backend.service.VehicleService;
+import com.alwx.backend.utils.LockProvider;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -78,6 +80,8 @@ public class UserController {
     private final SimpMessagingTemplate messagingTemplate;
 
     private final VehicleImportService vehicleImportService;
+
+    private final LockProvider lockProvider;
 
     /**
      * Получает таблицу с автомобилями для пользователей.
@@ -162,6 +166,10 @@ public class UserController {
                 .body(new AppError(HttpStatus.BAD_REQUEST.value(), errors.toString()));
         }
 
+        while(!lockProvider.getReentranLock().isHeldByCurrentThread()){
+            lockProvider.getReentranLock().lock();
+        }
+
         ResponseEntity<?> response = vehicleService.createVehicle(newVehicle);
         if(response.getStatusCode().equals(HttpStatus.OK)){
             Map<String, Long> responseBody = (Map<String, Long>) response.getBody();
@@ -169,6 +177,8 @@ public class UserController {
             messagingTemplate.convertAndSend("/topic/tableUpdates", 
                 "{\"message\": \"Данные в таблице обновлены\"}");
         }
+
+        lockProvider.getReentranLock().unlock();
         
         return response;
     }

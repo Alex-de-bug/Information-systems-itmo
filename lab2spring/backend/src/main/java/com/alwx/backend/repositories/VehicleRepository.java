@@ -17,4 +17,5 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long>  {
     Optional<Vehicle> findByName(String name);
     List<Vehicle> findByCoordinatesId(Long coordinatesId);
     List<Vehicle> findAllByCoordinatesId(Long coordinatesId);
+    Boolean existsByName(String name);
 }

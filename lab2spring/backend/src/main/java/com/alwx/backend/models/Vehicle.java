@@ -39,7 +39,7 @@ public class Vehicle {
 
     @NotNull
     @NotEmpty
-    @Column(length = 255, unique = true)
+    @Column(length = 255)
     private String name;
 
     @ManyToOne(cascade = CascadeType.MERGE)

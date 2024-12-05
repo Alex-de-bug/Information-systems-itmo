@@ -1,11 +1,14 @@
 package com.alwx.backend.service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
@@ -226,6 +229,19 @@ public class VehicleService {
      */
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ResponseEntity<?> createVehicle(RequestVehicle newVehicle){
+
+        if(vehicleRepository.existsByName(newVehicle.getName())){
+            return new ResponseEntity<>(
+                new AppError(
+                    HttpStatus.BAD_REQUEST.value(), 
+                    "Машина с таким именем уже существует."
+                ), 
+                HttpStatus.BAD_REQUEST
+            );
+        }
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        System.out.println(sdf.format(now));
 
         String constraintsError = checkNewConstraints(newVehicle);
         if(constraintsError != null) {
