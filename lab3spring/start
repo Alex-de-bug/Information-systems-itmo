@@ -1,0 +1,20 @@
+for server:
+
+.env (exampl)
+docker-compose down docker-compose up --build
+
+
+for local:
+
+/~.**rc:
+export SECRET=
+export LIFETIME=
+export POSTGRES_USER=
+export POSTGRES_PASSWORD=
+export POSTGRES_DB_PORT=
+export POSTGRES_DB=
+export POSTGRES_DB_HOST=localhost
+
+for all:
+
+create file .evn in root front
