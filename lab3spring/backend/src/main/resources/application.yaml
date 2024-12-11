@@ -22,7 +22,7 @@ logging:
     org.springframework.security.config.annotation.authentication.configuration: ERROR
 
 frontend:
-  url: http://localhost:3000
+  url: ${REACT_APP_FRONT}
 
 server:
   port: 8081

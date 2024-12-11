@@ -1,7 +1,13 @@
-FROM eclipse-temurin:17-jdk-alpine
-
+# Сборочный контейнер
+FROM maven:3.8.4-openjdk-17-slim AS build
 WORKDIR /app
-COPY ./target/backend-0.0.1-SNAPSHOT.jar app.jar
-EXPOSE 8081
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
+# Финальный контейнер
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "app.jar"]
