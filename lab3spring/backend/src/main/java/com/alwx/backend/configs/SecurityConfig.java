@@ -63,6 +63,7 @@ public class SecurityConfig{
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println(frontendUrl);
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin(frontendUrl);
         configuration.addAllowedHeader("*");

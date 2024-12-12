@@ -1,0 +1,26 @@
+for server:
+
+.env (exampl)
+.env in front (exampl)
+
+docker-compose down 
+docker-compose up --build
+
+
+for local:
+
+.env in front
+
+/~.**rc:
+export SECRET=2004alex
+export LIFETIME=30m
+export POSTGRES_USER=postgres
+export POSTGRES_PASSWORD=root
+export POSTGRES_DB_PORT=5432
+export POSTGRES_DB=postgres
+export POSTGRES_DB_HOST=localhost
+export MINIO_ACCESS_KEY=minioadmin
+export MINIO_SECRET_KEY=minioadmin
+export MINIO_URL=http://172.18.0.2:9000
+export BUCKET=data
+export REACT_APP_FRONT=http://localhost:3000
