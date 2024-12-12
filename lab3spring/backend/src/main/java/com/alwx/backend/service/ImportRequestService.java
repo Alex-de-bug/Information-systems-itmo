@@ -1,18 +1,15 @@
 package com.alwx.backend.service;
 
-import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.alwx.backend.controllers.exceptionHandlers.exceptions.BusinessValidationException;
 import com.alwx.backend.dtos.ImportStatus;
 import com.alwx.backend.models.ImportRequest;
 import com.alwx.backend.models.User;
-import com.alwx.backend.models.UserAction;
 import com.alwx.backend.models.enums.StatusType;
 import com.alwx.backend.repositories.ImportRequestRepository;
 import com.alwx.backend.repositories.UserRepository;
@@ -42,6 +39,9 @@ public class ImportRequestService {
 
     public ResponseEntity<?> getStatuses(String token){
         List<ImportRequest> lis;
+        if(jwtTokenUtil.getRoles(token).isEmpty()){
+            throw new BusinessValidationException("Ваш токен просрочен");
+        }
         if(jwtTokenUtil.getRoles(token).contains("ROLE_ADMIN")){
             lis = importRequestRepository.findAll();
         }else{
