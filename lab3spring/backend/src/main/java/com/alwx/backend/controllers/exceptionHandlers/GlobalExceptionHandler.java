@@ -18,7 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.alwx.backend.controllers.exceptionHandlers.exceptions.BusinessValidationException;
+import com.alwx.backend.controllers.exceptionHandlers.exceptions.BusinessException;
 import com.alwx.backend.controllers.exceptionHandlers.exceptions.ImportValidationException;
 import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.models.enums.StatusType;
@@ -44,8 +44,8 @@ public class GlobalExceptionHandler {
     @Autowired
     private ImportRequestService importRequest;
 
-    @ExceptionHandler(BusinessValidationException.class)
-    public ResponseEntity<AppError> handleBusinessValidationException(BusinessValidationException ex, Locale locale) {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<AppError> handleBusinessValidationException(BusinessException ex, Locale locale) {
         return new ResponseEntity<>(
                 new AppError(
                     HttpStatus.CONFLICT.value(), 
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ImportValidationException.class)
     public ResponseEntity<AppError> handleImportValidationException(ImportValidationException ex, Locale locale) {
-        importRequest.saveT(StatusType.ERROR, ex.getToken().substring(7), 0l);
+        importRequest.saveT(StatusType.ERROR, ex.getToken().substring(7), 0l, null);
         messagingTemplate.convertAndSend("/topic/istat", "{\"message\": \"Данные в таблице статусов обновлены\"}");
         return new ResponseEntity<>(
                 new AppError(

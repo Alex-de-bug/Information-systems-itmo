@@ -10,4 +10,5 @@ public class ImportStatus {
     private String status;
     private String username;
     private Long count; 
+    private String uid; 
 }

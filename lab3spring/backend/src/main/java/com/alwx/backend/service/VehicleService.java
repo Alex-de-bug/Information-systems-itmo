@@ -1,14 +1,13 @@
 package com.alwx.backend.service;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.Set;
 
 import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
@@ -16,8 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import com.alwx.backend.controllers.exceptionHandlers.exceptions.BusinessValidationException;
+import com.alwx.backend.controllers.exceptionHandlers.exceptions.BusinessException;
 import com.alwx.backend.dtos.AppError;
 import com.alwx.backend.dtos.RequestVehicle;
 import com.alwx.backend.models.Coordinates;
@@ -31,9 +32,6 @@ import com.alwx.backend.repositories.UserRepository;
 import com.alwx.backend.repositories.VehicleRepository;
 import com.alwx.backend.utils.UserError;
 import com.alwx.backend.utils.jwt.JwtTokenUtil;
-
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -144,7 +142,7 @@ public class VehicleService {
             }
 
             if(convertOwners.size() > 3){
-                throw new BusinessValidationException("Превышено максимальное количество владельцев (3)");
+                throw new BusinessException("Превышено максимальное количество владельцев (3)");
             }
 
             vehicle.setUsers(convertOwners);
@@ -293,14 +291,22 @@ public class VehicleService {
 
 
         List<String> owners = newVehicle.getNamesOfOwners();
-        List<User> convertOwners = new ArrayList<>();
-        for(String owner : owners){
-            if(userRepository.findByUsername(owner).isPresent()){
-                convertOwners.add(userRepository.findByUsername(owner).get());
-            }
+        Set<User> uniqueOwners = new HashSet<>();
+
+        for (String owner : owners) {
+            Optional<User> userOpt = userRepository.findByUsername(owner);
+            userOpt.ifPresent(uniqueOwners::add);
         }
+
+        List<User> convertOwners = new ArrayList<>(uniqueOwners);
         if(convertOwners.size() > 3){
-            throw new BusinessValidationException("Превышено максимальное количество владельцев (3)");
+            return new ResponseEntity<>(
+                new AppError(
+                    HttpStatus.BAD_REQUEST.value(), 
+                    "Превышено максимальное количество владельцев (3)"
+                ), 
+                HttpStatus.BAD_REQUEST
+            );
         }
         vehicle.setUsers(convertOwners);
 

@@ -29,7 +29,6 @@ import com.alwx.backend.dtos.RequestVehicle;
 import com.alwx.backend.dtos.SimpleInfoAboutCars;
 import com.alwx.backend.models.Vehicle;
 import com.alwx.backend.models.enums.Action;
-import com.alwx.backend.models.enums.StatusType;
 import com.alwx.backend.service.AuthService;
 import com.alwx.backend.service.ImportRequestService;
 import com.alwx.backend.service.UserActionService;
@@ -226,8 +225,6 @@ public class UserController {
             lockProvider.getReentranLock().unlock();
         }
         
-
-        importRequestService.saveT(StatusType.DONE, token.substring(7), (Long) response.getBody());
         messagingTemplate.convertAndSend("/topic/tableUpdates", 
             "{\"message\": \"Данные в таблице обновлены\"}");
 
@@ -238,6 +235,11 @@ public class UserController {
     @GetMapping("/vehicles/istat")
     public ResponseEntity<?> getImportStatuses(@RequestHeader(name = "Authorization") String token){
         return importRequestService.getStatuses(token.substring(7));
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<?> getImportFile(@RequestHeader(name = "Authorization") String token, @RequestParam("filename") String filename){
+        return importRequestService.getFile(filename, token.substring(7));
     }
 }
 

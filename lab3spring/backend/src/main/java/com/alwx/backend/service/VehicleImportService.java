@@ -8,22 +8,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alwx.backend.controllers.exceptionHandlers.exceptions.BusinessException;
 import com.alwx.backend.controllers.exceptionHandlers.exceptions.ImportValidationException;
 import com.alwx.backend.dtos.RequestVehicle;
 import com.alwx.backend.models.enums.FuelType;
+import com.alwx.backend.models.enums.StatusType;
 import com.alwx.backend.models.enums.VehicleType;
 
+import io.minio.errors.MinioException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
@@ -37,24 +46,62 @@ public class VehicleImportService {
     );
 
     private final Validator validator;
-
     private final VehicleService vehicleService;
+    private final PlatformTransactionManager transactionManager;
+    private final ImportRequestService importRequestService;
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ResponseEntity<?> processImport(MultipartFile file, String token) {
 
-        List<? extends RequestVehicle> vehicles = readCars(file, token);
         Long addedCarsCount = 0l;
+        String nameForFile = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        List<? extends RequestVehicle> vehicles = readCars(file, token);
 
-        if(!vehicles.isEmpty()){
-            for (RequestVehicle vehicle : vehicles) {
-                ResponseEntity<?> tmp = vehicleService.createVehicle(vehicle);
-                if(tmp.getStatusCode() != HttpStatus.OK){
-                    throw new ImportValidationException("Вы ввели повторящиеся машины.", token);
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        definition.setName("vehicleImportTransaction");
+        definition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        definition.setIsolationLevel(TransactionDefinition.ISOLATION_REPEATABLE_READ);
+
+        TransactionStatus status = transactionManager.getTransaction(definition);
+
+        try {
+            importRequestService.saveFile(file, nameForFile);
+
+            if(!vehicles.isEmpty()){
+                for (RequestVehicle vehicle : vehicles) {
+                    ResponseEntity<?> tmp = vehicleService.createVehicle(vehicle);
+                    if(tmp.getStatusCode() != HttpStatus.OK){
+                        throw new ImportValidationException(tmp.getBody().toString());
+                    }
+                } 
+                addedCarsCount = Integer.toUnsignedLong(vehicles.size());
+            }
+
+            transactionManager.commit(status);
+
+        }catch(Exception e){
+
+            transactionManager.rollback(status);
+
+            if(e.getClass().equals(ImportValidationException.class)){
+                importRequestService.deleteFile(nameForFile);
+                String errorMessage = e.getMessage();
+                Pattern pattern = Pattern.compile("message=(.*?),");
+                Matcher matcher = pattern.matcher(errorMessage);
+                if (matcher.find()) {
+                    errorMessage = matcher.group(1).trim();
                 }
+                throw new ImportValidationException(errorMessage, token);
+            }else if (e.getClass().equals(MinioException.class)){
+                throw new ImportValidationException("Ошибка сохранения в MinIO", token);
+            }else if (e.getClass().equals(InvalidDataAccessResourceUsageException.class)){
+                importRequestService.deleteFile(nameForFile);
+                throw new BusinessException("Ошибка сохранения в базу данных");
+            }else{
+                e.printStackTrace();
+                throw new ImportValidationException(e.getMessage(), token);
             } 
-            addedCarsCount = Integer.toUnsignedLong(vehicles.size());
         }
+        importRequestService.saveT(StatusType.DONE, token.substring(7), addedCarsCount, nameForFile);
     
         return new ResponseEntity<>(addedCarsCount, HttpStatus.OK);
     }
@@ -73,14 +120,14 @@ public class VehicleImportService {
             try (CSVParser parser = new CSVParser(reader, csvFormat)) {
                 validateHeaders(parser.getHeaderMap().keySet());
                 for (CSVRecord record : parser) {
-                    RequestVehicle tmp = processRecord(record, token);
+                    RequestVehicle tmp = processRecord(record);
                     vehicles.add(tmp);
                 
                 }
             }
         }catch (Exception e) {
             if(e.getClass().equals(ImportValidationException.class)){
-                throw (ImportValidationException) e;
+                throw new ImportValidationException(e.getMessage(), token);
             }else{
                 System.out.println();
                 throw new ImportValidationException("Ошибка в структуре csv", token);
@@ -89,7 +136,7 @@ public class VehicleImportService {
         return vehicles;
     }
 
-    private RequestVehicle processRecord(CSVRecord record, String token) throws IllegalArgumentException {
+    private RequestVehicle processRecord(CSVRecord record) throws IllegalArgumentException {
         String editPermissionString = record.get("редактирование").trim().toLowerCase();
         boolean editPermission;
         switch (editPermissionString) {
@@ -101,7 +148,7 @@ public class VehicleImportService {
             case "no" -> editPermission = false;
             case "false" -> editPermission = false;
             case "нет" -> editPermission = false;
-            default -> throw new ImportValidationException("Некорректность данных для импорта в поле редактирование", token);
+            default -> throw new ImportValidationException("Некорректность данных для импорта в поле редактирование");
         }
         RequestVehicle vehicle = new RequestVehicle(
             record.get("название"),                    
@@ -120,7 +167,7 @@ public class VehicleImportService {
 
         String constraintsError = vehicleService.checkNewConstraints(vehicle);
         if(constraintsError != null) {
-            throw new ImportValidationException(constraintsError, token);
+            throw new ImportValidationException(constraintsError);
         }
 
         Set<ConstraintViolation<RequestVehicle>> violations = validator.validate(vehicle);
@@ -141,7 +188,7 @@ public class VehicleImportService {
                 ));
             });
 
-            throw new ImportValidationException(errorMessage.toString(), token);
+            throw new ImportValidationException(errorMessage.toString());
         }
 
         System.out.println(vehicle.toString());

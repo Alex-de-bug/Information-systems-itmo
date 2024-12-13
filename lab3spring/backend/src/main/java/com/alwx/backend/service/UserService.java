@@ -1,6 +1,11 @@
 package com.alwx.backend.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,12 +28,6 @@ import com.alwx.backend.repositories.UserRepository;
 import com.alwx.backend.utils.UserError;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Сервис для управления пользователями и аутентификацией.

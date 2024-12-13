@@ -12,5 +12,6 @@ import com.alwx.backend.models.ImportRequest;
 @Repository
 public interface ImportRequestRepository extends JpaRepository<ImportRequest, Long> {
     List<ImportRequest> findAllByUserId(Long userId);
+    Optional<ImportRequest> findByUserId(Long userId);
     Optional<ImportRequest> findByUid(String uid);
 }
