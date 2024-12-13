@@ -2,7 +2,15 @@ package com.alwx.backend.controllers.exceptionHandlers.exceptions;
 
 
 public class ImportValidationException extends RuntimeException {
-    public ImportValidationException(String message) {
+    private final String token;
+
+    public ImportValidationException(String message, String token) {
         super(message);
+        this.token = token;
+    }
+
+    public String getToken() {
+        return token;
     }
 }
+

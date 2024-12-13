@@ -57,12 +57,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ImportValidationException.class)
     public ResponseEntity<AppError> handleImportValidationException(ImportValidationException ex, Locale locale) {
-        importRequest.saveT(StatusType.ERROR, ex.getMessage().substring(7), 0l);
+        importRequest.saveT(StatusType.ERROR, ex.getToken().substring(7), 0l);
         messagingTemplate.convertAndSend("/topic/istat", "{\"message\": \"Данные в таблице статусов обновлены\"}");
         return new ResponseEntity<>(
                 new AppError(
                     HttpStatus.CONFLICT.value(), 
-                    "Вы ввели повторящиеся машины."
+                    ex.getMessage()
                 ), 
                 HttpStatus.CONFLICT
             );

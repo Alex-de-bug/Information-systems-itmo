@@ -32,4 +32,6 @@ public class ImportRequest {
     private User user;
 
     private Long count;
+
+    private String uid;
 }

@@ -1,12 +1,11 @@
 package com.alwx.backend.controllers;
 
-import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -217,8 +216,6 @@ public class UserController {
 
     @PostMapping("/vehicles/import")
     public ResponseEntity<?> importVehicles(@RequestHeader(name = "Authorization") String token, @RequestParam("file") MultipartFile file){
-
-
         ResponseEntity<?> response;
         try{
             while(!lockProvider.getReentranLock().isHeldByCurrentThread()){
@@ -229,13 +226,11 @@ public class UserController {
             lockProvider.getReentranLock().unlock();
         }
         
-        if(response.getStatusCode().equals(HttpStatus.OK)){
-            importRequestService.saveT(StatusType.DONE, token.substring(7), (Long) response.getBody());
-            messagingTemplate.convertAndSend("/topic/tableUpdates", 
-                "{\"message\": \"Данные в таблице обновлены\"}");
-        }else{
-            importRequestService.saveT(StatusType.ERROR, token.substring(7), 0l);
-        }
+
+        importRequestService.saveT(StatusType.DONE, token.substring(7), (Long) response.getBody());
+        messagingTemplate.convertAndSend("/topic/tableUpdates", 
+            "{\"message\": \"Данные в таблице обновлены\"}");
+
         messagingTemplate.convertAndSend("/topic/istat", "{\"message\": \"Данные в таблице статусов обновлены\"}");
         return response;
     }
