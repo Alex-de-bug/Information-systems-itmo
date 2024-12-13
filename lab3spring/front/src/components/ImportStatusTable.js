@@ -95,10 +95,8 @@ const ImportStatusTable = () => {
         try {
             const response = await axios.get(`http://${process.env.REACT_APP_SERVER}/api/user/download?filename=${filename}`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Accept': 'application/octet-stream' // Указываем, что ожидаем бинарный файл
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                responseType: 'blob' // Указываем тип ответа
             });
     
             if (response.status === 200) {
@@ -119,9 +117,10 @@ const ImportStatusTable = () => {
                 throw new Error('Ошибка при загрузке файла');
             }
         } catch (error) {
+            console.log(error);
             dispatch(setNotification({
                 color: 'error',
-                message: `Ошибка при загрузке файла: ${error.message}`
+                message: `Ошибка при загрузке файла: ${error.response?.data?.message}`
             }));
         }
     };
@@ -162,8 +161,9 @@ const ImportStatusTable = () => {
                                         <IconButton 
                                             onClick={() => handleDownload(status.uid)}
                                             color="primary"
+                                            disabled={status.uid == null}
                                         >
-                                            <DownloadIcon />
+                                            <DownloadIcon/>
                                         </IconButton>
                                     </Box>
                                 </TableCell>

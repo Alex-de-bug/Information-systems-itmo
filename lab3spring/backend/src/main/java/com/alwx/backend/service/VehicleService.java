@@ -243,7 +243,7 @@ public class VehicleService {
             return new ResponseEntity<>(
                 new AppError(
                     HttpStatus.BAD_REQUEST.value(), 
-                    "Машина с таким именем уже существует."
+                    "Введена машина с повторяющимся названием"
                 ), 
                 HttpStatus.BAD_REQUEST
             );

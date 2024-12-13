@@ -21,6 +21,6 @@ export POSTGRES_DB=postgres
 export POSTGRES_DB_HOST=localhost
 export MINIO_ACCESS_KEY=minioadmin
 export MINIO_SECRET_KEY=minioadmin
-export MINIO_URL=http://172.18.0.2:9000
+export MINIO_URL=http://127.0.0.1:9000
 export BUCKET=data
 export REACT_APP_FRONT=http://localhost:3000
